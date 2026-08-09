@@ -8,7 +8,7 @@ const curatedDir = path.join(rootDir, "data", "curated");
 const sourceUrl = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IPG3311A2N";
 
 const response = await fetch(sourceUrl, {
-  headers: { "User-Agent": "Kaixiang-Inventory-Student-Project/1.0" }
+  headers: { "User-Agent": "Refractory-Inventory-Platform/1.0" }
 });
 if (!response.ok) {
   throw new Error(`FRED download failed: ${response.status} ${response.statusText}`);

@@ -1,4 +1,4 @@
-# Kaixiang Refractory Inventory Platform
+# Refractory Inventory Platform
 
 A cloud-ready inventory control product for a refractory materials company. It combines synthetic operational data with a real Federal Reserve steel-production series, surfaces low-stock decisions, and prepares a BigQuery ML demand forecast for a live Google Cloud deployment.
 

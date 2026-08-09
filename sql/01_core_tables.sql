@@ -1,5 +1,5 @@
 -- Replace YOUR_PROJECT_ID before running, or use scripts/deploy-gcp.sh.
-CREATE TABLE IF NOT EXISTS `YOUR_PROJECT_ID.kaixiang_inventory.alert_actions` (
+CREATE TABLE IF NOT EXISTS `YOUR_PROJECT_ID.refractory_inventory.alert_actions` (
   alert_id STRING NOT NULL,
   product_code STRING NOT NULL,
   warehouse STRING NOT NULL,

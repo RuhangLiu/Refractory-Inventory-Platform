@@ -95,7 +95,7 @@ async function queryCloudDashboard() {
     monthlyActivity: activityRows,
     demandSignal: forecastRows,
     source: {
-      inventory: "Synthetic Kaixiang operational data in BigQuery",
+      inventory: "Synthetic course-case operational data in BigQuery",
       demandSignal: "Federal Reserve Board via FRED, series IPG3311A2N",
       forecast: "BigQuery ML ARIMA_PLUS"
     }
@@ -232,5 +232,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`Kaixiang platform listening on http://localhost:${port}`);
+  console.log(`Refractory Inventory Platform listening on http://localhost:${port}`);
 });

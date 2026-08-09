@@ -12,4 +12,4 @@ steps:
 images:
   - ${_IMAGE}
 substitutions:
-  _IMAGE: us-central1-docker.pkg.dev/$PROJECT_ID/kaixiang-platform/inventory-app:latest
+  _IMAGE: us-central1-docker.pkg.dev/$PROJECT_ID/refractory-platform/inventory-app:latest

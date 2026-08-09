@@ -6,10 +6,10 @@ set -euo pipefail
 
 REGION="${REGION:-us-central1}"
 LOCATION="${LOCATION:-us-central1}"
-DATASET="${DATASET:-kaixiang_inventory}"
-SERVICE_NAME="${SERVICE_NAME:-kaixiang-inventory}"
-REPOSITORY="${REPOSITORY:-kaixiang-platform}"
-RUNTIME_SERVICE_ACCOUNT="kaixiang-app@${PROJECT_ID}.iam.gserviceaccount.com"
+DATASET="${DATASET:-refractory_inventory}"
+SERVICE_NAME="${SERVICE_NAME:-refractory-inventory}"
+REPOSITORY="${REPOSITORY:-refractory-platform}"
+RUNTIME_SERVICE_ACCOUNT="refractory-app@${PROJECT_ID}.iam.gserviceaccount.com"
 RAW_BUCKET="${RAW_BUCKET:-ruhangliu-lake-raw}"
 CURATED_BUCKET="${CURATED_BUCKET:-ruhangliu-lake-curated}"
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/inventory-app:latest"
@@ -69,8 +69,8 @@ for sql_file in sql/01_core_tables.sql sql/02_business_views.sql sql/03_data_qua
 done
 
 gcloud iam service-accounts describe "$RUNTIME_SERVICE_ACCOUNT" >/dev/null 2>&1 ||
-  gcloud iam service-accounts create kaixiang-app \
-    --display-name="Kaixiang inventory Cloud Run application"
+  gcloud iam service-accounts create refractory-app \
+    --display-name="Refractory inventory Cloud Run application"
 
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${RUNTIME_SERVICE_ACCOUNT}" \
@@ -86,7 +86,7 @@ gcloud artifacts repositories describe "$REPOSITORY" --location="$REGION" >/dev/
   gcloud artifacts repositories create "$REPOSITORY" \
     --repository-format=docker \
     --location="$REGION" \
-    --description="Kaixiang student platform images"
+    --description="Refractory inventory platform images"
 
 gcloud builds submit --tag "$IMAGE"
 gcloud run deploy "$SERVICE_NAME" \

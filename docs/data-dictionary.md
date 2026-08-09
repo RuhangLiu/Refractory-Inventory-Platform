@@ -63,4 +63,4 @@ Real public data from the Federal Reserve Board, distributed through FRED series
 | `steel_production_index` | FLOAT | Industrial production index, 2017 = 100 |
 | `source_series` | STRING | FRED series identifier |
 
-The series is an external planning signal. It is not presented as Kaixiang sales or as a causal product-level forecast.
+The series is an external planning signal. It is not presented as company sales or as a causal product-level forecast.

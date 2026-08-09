@@ -635,7 +635,7 @@ function exportCsv() {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `kaixiang-inventory-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `refractory-inventory-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
   showToast(`Exported ${rows.length} inventory lines.`);

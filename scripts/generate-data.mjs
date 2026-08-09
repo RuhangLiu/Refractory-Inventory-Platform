@@ -251,7 +251,7 @@ await writeFile(
       monthlyActivity,
       demandSignal,
       source: {
-        inventory: "Synthetic Kaixiang operational data",
+        inventory: "Synthetic course-case operational data",
         demandSignal: "Federal Reserve Board via FRED, series IPG3311A2N",
         forecast: "Local seasonal baseline; production target is BigQuery ML ARIMA_PLUS"
       }

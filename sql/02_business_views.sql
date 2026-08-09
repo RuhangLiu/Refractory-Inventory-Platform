@@ -1,5 +1,5 @@
 -- Inventory serving view used by the Cloud Run application.
-CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.kaixiang_inventory.serving_inventory` AS
+CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.refractory_inventory.serving_inventory` AS
 SELECT
   i.alert_id,
   i.product_code,
@@ -34,19 +34,19 @@ SELECT
     CAST(CEIL(i.safety_stock * 1.5 - i.available_quantity - i.in_transit_quantity) AS INT64)
   ) AS suggested_order_quantity,
   CAST(i.current_quantity * i.unit_price AS FLOAT64) AS inventory_value
-FROM `YOUR_PROJECT_ID.kaixiang_inventory.inventory` AS i;
+FROM `YOUR_PROJECT_ID.refractory_inventory.inventory` AS i;
 
 -- Business aggregate: monthly sales and purchase quantities.
-CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.kaixiang_inventory.monthly_inventory_activity` AS
+CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.refractory_inventory.monthly_inventory_activity` AS
 SELECT
   DATE_TRUNC(transaction_date, MONTH) AS month,
   SUM(IF(transaction_type = 'sale', quantity, 0)) AS sales_quantity,
   SUM(IF(transaction_type = 'purchase', quantity, 0)) AS purchase_quantity
-FROM `YOUR_PROJECT_ID.kaixiang_inventory.transactions`
+FROM `YOUR_PROJECT_ID.refractory_inventory.transactions`
 GROUP BY month;
 
 -- Looker Studio-ready KPI aggregate.
-CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.kaixiang_inventory.inventory_kpis` AS
+CREATE OR REPLACE VIEW `YOUR_PROJECT_ID.refractory_inventory.inventory_kpis` AS
 SELECT
   warehouse,
   COUNT(*) AS inventory_line_count,
@@ -56,5 +56,5 @@ SELECT
   SUM(available_quantity) AS available_quantity,
   SUM(inventory_value) AS inventory_value,
   SAFE_DIVIDE(COUNTIF(inventory_status = 'Healthy'), COUNT(*)) AS healthy_line_rate
-FROM `YOUR_PROJECT_ID.kaixiang_inventory.serving_inventory`
+FROM `YOUR_PROJECT_ID.refractory_inventory.serving_inventory`
 GROUP BY warehouse;
