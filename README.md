@@ -1,0 +1,64 @@
+# Kaixiang Refractory Inventory Platform
+
+A cloud-ready inventory control product for a refractory materials company. It combines synthetic operational data with a real Federal Reserve steel-production series, surfaces low-stock decisions, and prepares a BigQuery ML demand forecast for a live Google Cloud deployment.
+
+## What the application does
+
+- Summarizes inventory value, available stock, action-required lines, and stock health
+- Filters inventory by warehouse, product, category, supplier, and status
+- Ranks low-stock and out-of-stock materials by replenishment gap
+- Requires a human acknowledgment before any procurement follow-up
+- Shows monthly synthetic sales and purchase activity
+- Shows real steel-industry history and a labeled forecast
+- Exports filtered inventory to CSV
+- Documents source lineage and metric definitions in the product
+
+## Data
+
+- **Real public data:** Federal Reserve Board industrial production index for iron and steel products, FRED series `IPG3311A2N`
+- **Synthetic data:** 30 refractory products, 90 product-warehouse inventory lines, and 4,320 monthly transaction rows
+
+No real customer information or confidential company data is included.
+
+## Run locally
+
+```bash
+npm ci
+npm run fetch:fred
+npm run generate
+npm run validate:data
+npm test
+npm start
+```
+
+Open `http://localhost:8080`.
+
+The local version uses the generated serving snapshot and a clearly labeled seasonal baseline forecast. When `GCP_PROJECT_ID` and `BQ_DATASET` are configured, the server reads the BigQuery serving views and BigQuery ML output.
+
+## Project structure
+
+```text
+data/
+  raw/                 Unchanged FRED download
+  curated/             Typed CSV inputs for BigQuery
+  serving/             Local application snapshot
+docs/                  Architecture, data dictionary, runbook, evidence checklist
+public/                Inventory application
+schemas/               Explicit BigQuery table schemas
+scripts/               Data generation, validation, and GCP deployment
+sql/                   Business, quality, and BigQuery ML SQL
+tests/                 Data and metric checks
+```
+
+## Cloud deployment
+
+Read [`docs/gcp-runbook.md`](docs/gcp-runbook.md) before creating cloud resources. The deployment script is intentionally not executed without project-owner approval because it enables APIs, creates billable resources, deploys a public service, and grants instructor access.
+
+## Metric definitions
+
+- **Available stock:** current quantity minus reserved quantity
+- **Inventory value:** current quantity multiplied by unit price
+- **Action required:** available stock is below safety stock
+- **Suggested order:** 150% of safety stock minus available and in-transit quantities, floored at zero
+
+The external forecast is a planning signal, not a product-level sales commitment. Procurement remains a human decision.

@@ -1,0 +1,91 @@
+alert_id,product_code,product_name,category,supplier,warehouse,region,unit,current_quantity,reserved_quantity,available_quantity,in_transit_quantity,safety_stock,unit_price,lead_time_days,last_updated
+ALT-MCB-001-CHI,MCB-001,MT-10A,Magnesia Carbon Brick,Atlas Minerals,Chicago,Midwest,piece,0,0,0,90,128,11.82,31,2026-07-27T18:00:00Z
+ALT-MCB-001-HOU,MCB-001,MT-10A,Magnesia Carbon Brick,Atlas Minerals,Houston,South,piece,78,22,56,86,100,11.82,31,2026-07-27T18:00:00Z
+ALT-MCB-001-PIT,MCB-001,MT-10A,Magnesia Carbon Brick,Atlas Minerals,Pittsburgh,Northeast,piece,44,8,36,43,76,11.82,31,2026-07-27T18:00:00Z
+ALT-MCB-002-CHI,MCB-002,MT-12B,Magnesia Carbon Brick,Henan Thermal Products,Chicago,Midwest,piece,127,29,98,103,124,10.69,27,2026-07-27T18:00:00Z
+ALT-MCB-002-HOU,MCB-002,MT-12B,Magnesia Carbon Brick,Henan Thermal Products,Houston,South,piece,296,80,216,0,97,10.69,27,2026-07-27T18:00:00Z
+ALT-MCB-002-PIT,MCB-002,MT-12B,Magnesia Carbon Brick,Henan Thermal Products,Pittsburgh,Northeast,piece,239,25,214,0,74,10.69,27,2026-07-27T18:00:00Z
+ALT-MCB-003-CHI,MCB-003,Ladle Guard,Magnesia Carbon Brick,Summit Industrial Ceramics,Chicago,Midwest,piece,194,51,143,0,95,10.72,44,2026-07-27T18:00:00Z
+ALT-MCB-003-HOU,MCB-003,Ladle Guard,Magnesia Carbon Brick,Summit Industrial Ceramics,Houston,South,piece,138,16,122,0,74,10.72,44,2026-07-27T18:00:00Z
+ALT-MCB-003-PIT,MCB-003,Ladle Guard,Magnesia Carbon Brick,Summit Industrial Ceramics,Pittsburgh,Northeast,piece,91,8,83,0,56,10.72,44,2026-07-27T18:00:00Z
+ALT-MCB-004-CHI,MCB-004,Converter 14C,Magnesia Carbon Brick,Atlas Minerals,Chicago,Midwest,piece,222,71,151,0,134,12.11,41,2026-07-27T18:00:00Z
+ALT-MCB-004-HOU,MCB-004,Converter 14C,Magnesia Carbon Brick,Atlas Minerals,Houston,South,piece,315,28,287,0,106,12.11,41,2026-07-27T18:00:00Z
+ALT-MCB-004-PIT,MCB-004,Converter 14C,Magnesia Carbon Brick,Atlas Minerals,Pittsburgh,Northeast,piece,0,0,0,112,80,12.11,41,2026-07-27T18:00:00Z
+ALT-MCB-005-CHI,MCB-005,EAF Sidewall,Magnesia Carbon Brick,Henan Thermal Products,Chicago,Midwest,piece,62,5,57,61,105,12.46,41,2026-07-27T18:00:00Z
+ALT-MCB-005-HOU,MCB-005,EAF Sidewall,Magnesia Carbon Brick,Henan Thermal Products,Houston,South,piece,65,10,55,111,83,12.46,41,2026-07-27T18:00:00Z
+ALT-MCB-005-PIT,MCB-005,EAF Sidewall,Magnesia Carbon Brick,Henan Thermal Products,Pittsburgh,Northeast,piece,70,21,49,79,63,12.46,41,2026-07-27T18:00:00Z
+ALT-HAB-001-CHI,HAB-001,HA-70,High Alumina Brick,Tianjin Furnace Supply,Chicago,Midwest,piece,217,6,211,0,121,9.1,44,2026-07-27T18:00:00Z
+ALT-HAB-001-HOU,HAB-001,HA-70,High Alumina Brick,Tianjin Furnace Supply,Houston,South,piece,195,29,166,0,95,9.1,44,2026-07-27T18:00:00Z
+ALT-HAB-001-PIT,HAB-001,HA-70,High Alumina Brick,Tianjin Furnace Supply,Pittsburgh,Northeast,piece,170,2,168,0,72,9.1,44,2026-07-27T18:00:00Z
+ALT-HAB-002-CHI,HAB-002,HA-75,High Alumina Brick,Great Lakes Refractories,Chicago,Midwest,piece,167,42,125,0,61,8.92,28,2026-07-27T18:00:00Z
+ALT-HAB-002-HOU,HAB-002,HA-75,High Alumina Brick,Great Lakes Refractories,Houston,South,piece,159,17,142,0,48,8.92,28,2026-07-27T18:00:00Z
+ALT-HAB-002-PIT,HAB-002,HA-75,High Alumina Brick,Great Lakes Refractories,Pittsburgh,Northeast,piece,56,10,46,0,36,8.92,28,2026-07-27T18:00:00Z
+ALT-HAB-003-CHI,HAB-003,HA-80,High Alumina Brick,MagTech Materials,Chicago,Midwest,piece,259,76,183,0,108,6.1,40,2026-07-27T18:00:00Z
+ALT-HAB-003-HOU,HAB-003,HA-80,High Alumina Brick,MagTech Materials,Houston,South,piece,0,0,0,55,85,6.1,40,2026-07-27T18:00:00Z
+ALT-HAB-003-PIT,HAB-003,HA-80,High Alumina Brick,MagTech Materials,Pittsburgh,Northeast,piece,49,7,42,91,65,6.1,40,2026-07-27T18:00:00Z
+ALT-HAB-004-CHI,HAB-004,Checker 65,High Alumina Brick,Tianjin Furnace Supply,Chicago,Midwest,piece,52,1,51,54,108,8.31,26,2026-07-27T18:00:00Z
+ALT-HAB-004-HOU,HAB-004,Checker 65,High Alumina Brick,Tianjin Furnace Supply,Houston,South,piece,91,2,89,60,85,8.31,26,2026-07-27T18:00:00Z
+ALT-HAB-004-PIT,HAB-004,Checker 65,High Alumina Brick,Tianjin Furnace Supply,Pittsburgh,Northeast,piece,155,2,153,0,65,8.31,26,2026-07-27T18:00:00Z
+ALT-HAB-005-CHI,HAB-005,Kiln Crown,High Alumina Brick,Great Lakes Refractories,Chicago,Midwest,piece,123,1,122,0,67,7.4,48,2026-07-27T18:00:00Z
+ALT-HAB-005-HOU,HAB-005,Kiln Crown,High Alumina Brick,Great Lakes Refractories,Houston,South,piece,131,2,129,0,53,7.4,48,2026-07-27T18:00:00Z
+ALT-HAB-005-PIT,HAB-005,Kiln Crown,High Alumina Brick,Great Lakes Refractories,Pittsburgh,Northeast,piece,135,42,93,0,40,7.4,48,2026-07-27T18:00:00Z
+ALT-CAS-001-CHI,CAS-001,Low Cement 70,Castable,Summit Industrial Ceramics,Chicago,Midwest,ton,34,12,22,0,20,1238.72,42,2026-07-27T18:00:00Z
+ALT-CAS-001-HOU,CAS-001,Low Cement 70,Castable,Summit Industrial Ceramics,Houston,South,ton,25,1,24,0,16,1238.72,42,2026-07-27T18:00:00Z
+ALT-CAS-001-PIT,CAS-001,Low Cement 70,Castable,Summit Industrial Ceramics,Pittsburgh,Northeast,ton,27,4,23,0,12,1238.72,42,2026-07-27T18:00:00Z
+ALT-CAS-002-CHI,CAS-002,Ultra-Low Cement,Castable,Atlas Minerals,Chicago,Midwest,ton,0,0,0,20,21,1129.98,23,2026-07-27T18:00:00Z
+ALT-CAS-002-HOU,CAS-002,Ultra-Low Cement,Castable,Atlas Minerals,Houston,South,ton,12,2,10,20,16,1129.98,23,2026-07-27T18:00:00Z
+ALT-CAS-002-PIT,CAS-002,Ultra-Low Cement,Castable,Atlas Minerals,Pittsburgh,Northeast,ton,10,3,7,6,12,1129.98,23,2026-07-27T18:00:00Z
+ALT-CAS-003-CHI,CAS-003,Rapid Repair,Castable,Henan Thermal Products,Chicago,Midwest,ton,10,0,10,10,10,1201.89,62,2026-07-27T18:00:00Z
+ALT-CAS-003-HOU,CAS-003,Rapid Repair,Castable,Henan Thermal Products,Houston,South,ton,27,7,20,0,8,1201.89,62,2026-07-27T18:00:00Z
+ALT-CAS-003-PIT,CAS-003,Rapid Repair,Castable,Henan Thermal Products,Pittsburgh,Northeast,ton,17,3,14,0,8,1201.89,62,2026-07-27T18:00:00Z
+ALT-CAS-004-CHI,CAS-004,Abrasion Guard,Castable,Summit Industrial Ceramics,Chicago,Midwest,ton,46,9,37,0,30,820.97,46,2026-07-27T18:00:00Z
+ALT-CAS-004-HOU,CAS-004,Abrasion Guard,Castable,Summit Industrial Ceramics,Houston,South,ton,61,9,52,0,24,820.97,46,2026-07-27T18:00:00Z
+ALT-CAS-004-PIT,CAS-004,Abrasion Guard,Castable,Summit Industrial Ceramics,Pittsburgh,Northeast,ton,44,10,34,0,18,820.97,46,2026-07-27T18:00:00Z
+ALT-CAS-005-CHI,CAS-005,Pumpable 60,Castable,Atlas Minerals,Chicago,Midwest,ton,30,1,29,0,16,1039.4,26,2026-07-27T18:00:00Z
+ALT-CAS-005-HOU,CAS-005,Pumpable 60,Castable,Atlas Minerals,Houston,South,ton,24,6,18,0,13,1039.4,26,2026-07-27T18:00:00Z
+ALT-CAS-005-PIT,CAS-005,Pumpable 60,Castable,Atlas Minerals,Pittsburgh,Northeast,ton,0,0,0,7,10,1039.4,26,2026-07-27T18:00:00Z
+ALT-SIB-001-CHI,SIB-001,Coke Oven 94,Silica Brick,MagTech Materials,Chicago,Midwest,piece,20,6,14,35,48,7.47,60,2026-07-27T18:00:00Z
+ALT-SIB-001-HOU,SIB-001,Coke Oven 94,Silica Brick,MagTech Materials,Houston,South,piece,18,5,13,49,38,7.47,60,2026-07-27T18:00:00Z
+ALT-SIB-001-PIT,SIB-001,Coke Oven 94,Silica Brick,MagTech Materials,Pittsburgh,Northeast,piece,32,8,24,33,29,7.47,60,2026-07-27T18:00:00Z
+ALT-SIB-002-CHI,SIB-002,Glass Crown 96,Silica Brick,Tianjin Furnace Supply,Chicago,Midwest,piece,246,60,186,0,110,6.57,20,2026-07-27T18:00:00Z
+ALT-SIB-002-HOU,SIB-002,Glass Crown 96,Silica Brick,Tianjin Furnace Supply,Houston,South,piece,240,75,165,0,87,6.57,20,2026-07-27T18:00:00Z
+ALT-SIB-002-PIT,SIB-002,Glass Crown 96,Silica Brick,Tianjin Furnace Supply,Pittsburgh,Northeast,piece,112,9,103,0,66,6.57,20,2026-07-27T18:00:00Z
+ALT-SIB-003-CHI,SIB-003,Hot Blast 95,Silica Brick,Great Lakes Refractories,Chicago,Midwest,piece,171,10,161,0,66,8.35,60,2026-07-27T18:00:00Z
+ALT-SIB-003-HOU,SIB-003,Hot Blast 95,Silica Brick,Great Lakes Refractories,Houston,South,piece,129,37,92,0,52,8.35,60,2026-07-27T18:00:00Z
+ALT-SIB-003-PIT,SIB-003,Hot Blast 95,Silica Brick,Great Lakes Refractories,Pittsburgh,Northeast,piece,92,31,61,0,39,8.35,60,2026-07-27T18:00:00Z
+ALT-SIB-004-CHI,SIB-004,Checker 93,Silica Brick,MagTech Materials,Chicago,Midwest,piece,333,77,256,0,105,7.16,17,2026-07-27T18:00:00Z
+ALT-SIB-004-HOU,SIB-004,Checker 93,Silica Brick,MagTech Materials,Houston,South,piece,0,0,0,58,82,7.16,17,2026-07-27T18:00:00Z
+ALT-SIB-004-PIT,SIB-004,Checker 93,Silica Brick,MagTech Materials,Pittsburgh,Northeast,piece,31,8,23,68,62,7.16,17,2026-07-27T18:00:00Z
+ALT-SIB-005-CHI,SIB-005,Silica Special,Silica Brick,Tianjin Furnace Supply,Chicago,Midwest,piece,85,27,58,59,104,5.98,31,2026-07-27T18:00:00Z
+ALT-SIB-005-HOU,SIB-005,Silica Special,Silica Brick,Tianjin Furnace Supply,Houston,South,piece,75,22,53,51,82,5.98,31,2026-07-27T18:00:00Z
+ALT-SIB-005-PIT,SIB-005,Silica Special,Silica Brick,Tianjin Furnace Supply,Pittsburgh,Northeast,piece,114,3,111,0,62,5.98,31,2026-07-27T18:00:00Z
+ALT-MOR-001-CHI,MOR-001,Air Set 40,Refractory Mortar,Henan Thermal Products,Chicago,Midwest,ton,19,1,18,0,11,815.21,27,2026-07-27T18:00:00Z
+ALT-MOR-001-HOU,MOR-001,Air Set 40,Refractory Mortar,Henan Thermal Products,Houston,South,ton,11,3,8,0,8,815.21,27,2026-07-27T18:00:00Z
+ALT-MOR-001-PIT,MOR-001,Air Set 40,Refractory Mortar,Henan Thermal Products,Pittsburgh,Northeast,ton,24,2,22,0,8,815.21,27,2026-07-27T18:00:00Z
+ALT-MOR-002-CHI,MOR-002,Heat Set 60,Refractory Mortar,Summit Industrial Ceramics,Chicago,Midwest,ton,64,13,51,0,24,836.57,50,2026-07-27T18:00:00Z
+ALT-MOR-002-HOU,MOR-002,Heat Set 60,Refractory Mortar,Summit Industrial Ceramics,Houston,South,ton,62,15,47,0,19,836.57,50,2026-07-27T18:00:00Z
+ALT-MOR-002-PIT,MOR-002,Heat Set 60,Refractory Mortar,Summit Industrial Ceramics,Pittsburgh,Northeast,ton,42,1,41,0,14,836.57,50,2026-07-27T18:00:00Z
+ALT-MOR-003-CHI,MOR-003,Phosphate Bond,Refractory Mortar,Atlas Minerals,Chicago,Midwest,ton,0,0,0,13,14,549.69,33,2026-07-27T18:00:00Z
+ALT-MOR-003-HOU,MOR-003,Phosphate Bond,Refractory Mortar,Atlas Minerals,Houston,South,ton,6,1,5,9,11,549.69,33,2026-07-27T18:00:00Z
+ALT-MOR-003-PIT,MOR-003,Phosphate Bond,Refractory Mortar,Atlas Minerals,Pittsburgh,Northeast,ton,6,2,4,5,8,549.69,33,2026-07-27T18:00:00Z
+ALT-MOR-004-CHI,MOR-004,Silica Mortar,Refractory Mortar,Henan Thermal Products,Chicago,Midwest,ton,12,2,10,11,13,611.7,35,2026-07-27T18:00:00Z
+ALT-MOR-004-HOU,MOR-004,Silica Mortar,Refractory Mortar,Henan Thermal Products,Houston,South,ton,15,4,11,0,10,611.7,35,2026-07-27T18:00:00Z
+ALT-MOR-004-PIT,MOR-004,Silica Mortar,Refractory Mortar,Henan Thermal Products,Pittsburgh,Northeast,ton,22,8,14,0,8,611.7,35,2026-07-27T18:00:00Z
+ALT-MOR-005-CHI,MOR-005,Magnesia Mortar,Refractory Mortar,Summit Industrial Ceramics,Chicago,Midwest,ton,34,0,34,0,10,806.99,56,2026-07-27T18:00:00Z
+ALT-MOR-005-HOU,MOR-005,Magnesia Mortar,Refractory Mortar,Summit Industrial Ceramics,Houston,South,ton,23,1,22,0,8,806.99,56,2026-07-27T18:00:00Z
+ALT-MOR-005-PIT,MOR-005,Magnesia Mortar,Refractory Mortar,Summit Industrial Ceramics,Pittsburgh,Northeast,ton,26,4,22,0,8,806.99,56,2026-07-27T18:00:00Z
+ALT-INS-001-CHI,INS-001,Ceramic Fiber 1260,Insulation Material,Great Lakes Refractories,Chicago,Midwest,piece,179,36,143,0,80,8.01,46,2026-07-27T18:00:00Z
+ALT-INS-001-HOU,INS-001,Ceramic Fiber 1260,Insulation Material,Great Lakes Refractories,Houston,South,piece,125,37,88,0,63,8.01,46,2026-07-27T18:00:00Z
+ALT-INS-001-PIT,INS-001,Ceramic Fiber 1260,Insulation Material,Great Lakes Refractories,Pittsburgh,Northeast,piece,0,0,0,63,48,8.01,46,2026-07-27T18:00:00Z
+ALT-INS-002-CHI,INS-002,Calcium Silicate,Insulation Material,MagTech Materials,Chicago,Midwest,piece,61,15,46,110,81,15.77,48,2026-07-27T18:00:00Z
+ALT-INS-002-HOU,INS-002,Calcium Silicate,Insulation Material,MagTech Materials,Houston,South,piece,26,3,23,57,64,15.77,48,2026-07-27T18:00:00Z
+ALT-INS-002-PIT,INS-002,Calcium Silicate,Insulation Material,MagTech Materials,Pittsburgh,Northeast,piece,48,14,34,67,49,15.77,48,2026-07-27T18:00:00Z
+ALT-INS-003-CHI,INS-003,Insulating Brick 23,Insulation Material,Tianjin Furnace Supply,Chicago,Midwest,piece,189,9,180,0,61,7.69,37,2026-07-27T18:00:00Z
+ALT-INS-003-HOU,INS-003,Insulating Brick 23,Insulation Material,Tianjin Furnace Supply,Houston,South,piece,68,12,56,0,48,7.69,37,2026-07-27T18:00:00Z
+ALT-INS-003-PIT,INS-003,Insulating Brick 23,Insulation Material,Tianjin Furnace Supply,Pittsburgh,Northeast,piece,63,2,61,0,37,7.69,37,2026-07-27T18:00:00Z
+ALT-INS-004-CHI,INS-004,Fiber Module 1400,Insulation Material,Great Lakes Refractories,Chicago,Midwest,piece,175,53,122,0,71,18.22,55,2026-07-27T18:00:00Z
+ALT-INS-004-HOU,INS-004,Fiber Module 1400,Insulation Material,Great Lakes Refractories,Houston,South,piece,129,22,107,0,55,18.22,55,2026-07-27T18:00:00Z
+ALT-INS-004-PIT,INS-004,Fiber Module 1400,Insulation Material,Great Lakes Refractories,Pittsburgh,Northeast,piece,93,7,86,0,42,18.22,55,2026-07-27T18:00:00Z
+ALT-INS-005-CHI,INS-005,Microporous Board,Insulation Material,MagTech Materials,Chicago,Midwest,piece,90,21,69,0,29,14.17,23,2026-07-27T18:00:00Z
+ALT-INS-005-HOU,INS-005,Microporous Board,Insulation Material,MagTech Materials,Houston,South,piece,0,0,0,29,22,14.17,23,2026-07-27T18:00:00Z
+ALT-INS-005-PIT,INS-005,Microporous Board,Insulation Material,MagTech Materials,Pittsburgh,Northeast,piece,9,3,6,20,17,14.17,23,2026-07-27T18:00:00Z

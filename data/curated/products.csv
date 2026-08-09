@@ -1,0 +1,31 @@
+product_code,product_name,category,supplier,unit,unit_price,lead_time_days,safety_stock,monthly_demand_baseline
+MCB-001,MT-10A,Magnesia Carbon Brick,Atlas Minerals,piece,11.82,31,304,365
+MCB-002,MT-12B,Magnesia Carbon Brick,Henan Thermal Products,piece,10.69,27,295,510
+MCB-003,Ladle Guard,Magnesia Carbon Brick,Summit Industrial Ceramics,piece,10.72,44,225,340
+MCB-004,Converter 14C,Magnesia Carbon Brick,Atlas Minerals,piece,12.11,41,320,397
+MCB-005,EAF Sidewall,Magnesia Carbon Brick,Henan Thermal Products,piece,12.46,41,250,386
+HAB-001,HA-70,High Alumina Brick,Tianjin Furnace Supply,piece,9.1,44,288,395
+HAB-002,HA-75,High Alumina Brick,Great Lakes Refractories,piece,8.92,28,145,254
+HAB-003,HA-80,High Alumina Brick,MagTech Materials,piece,6.1,40,258,331
+HAB-004,Checker 65,High Alumina Brick,Tianjin Furnace Supply,piece,8.31,26,258,293
+HAB-005,Kiln Crown,High Alumina Brick,Great Lakes Refractories,piece,7.4,48,160,227
+CAS-001,Low Cement 70,Castable,Summit Industrial Ceramics,ton,1238.72,42,48,67
+CAS-002,Ultra-Low Cement,Castable,Atlas Minerals,ton,1129.98,23,49,56
+CAS-003,Rapid Repair,Castable,Henan Thermal Products,ton,1201.89,62,24,43
+CAS-004,Abrasion Guard,Castable,Summit Industrial Ceramics,ton,820.97,46,72,84
+CAS-005,Pumpable 60,Castable,Atlas Minerals,ton,1039.4,26,39,47
+SIB-001,Coke Oven 94,Silica Brick,MagTech Materials,piece,7.47,60,114,186
+SIB-002,Glass Crown 96,Silica Brick,Tianjin Furnace Supply,piece,6.57,20,263,319
+SIB-003,Hot Blast 95,Silica Brick,Great Lakes Refractories,piece,8.35,60,157,223
+SIB-004,Checker 93,Silica Brick,MagTech Materials,piece,7.16,17,249,309
+SIB-005,Silica Special,Silica Brick,Tianjin Furnace Supply,piece,5.98,31,247,283
+MOR-001,Air Set 40,Refractory Mortar,Henan Thermal Products,ton,815.21,27,25,32
+MOR-002,Heat Set 60,Refractory Mortar,Summit Industrial Ceramics,ton,836.57,50,57,69
+MOR-003,Phosphate Bond,Refractory Mortar,Atlas Minerals,ton,549.69,33,33,56
+MOR-004,Silica Mortar,Refractory Mortar,Henan Thermal Products,ton,611.7,35,30,37
+MOR-005,Magnesia Mortar,Refractory Mortar,Summit Industrial Ceramics,ton,806.99,56,23,29
+INS-001,Ceramic Fiber 1260,Insulation Material,Great Lakes Refractories,piece,8.01,46,191,229
+INS-002,Calcium Silicate,Insulation Material,MagTech Materials,piece,15.77,48,194,231
+INS-003,Insulating Brick 23,Insulation Material,Tianjin Furnace Supply,piece,7.69,37,146,187
+INS-004,Fiber Module 1400,Insulation Material,Great Lakes Refractories,piece,18.22,55,168,197
+INS-005,Microporous Board,Insulation Material,MagTech Materials,piece,14.17,23,68,122

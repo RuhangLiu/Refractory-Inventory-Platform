@@ -1,0 +1,5 @@
+[
+  { "name": "observation_date", "type": "DATE", "mode": "REQUIRED" },
+  { "name": "steel_production_index", "type": "FLOAT", "mode": "REQUIRED" },
+  { "name": "source_series", "type": "STRING", "mode": "REQUIRED" }
+]

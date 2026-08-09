@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kaixiang refractory inventory control platform with cloud-ready demand forecasting."
+    />
+    <title>Kaixiang Inventory Control</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/vendor/chart.umd.js" defer></script>
+    <script src="/app.js" type="module"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">KX</div>
+          <div>
+            <strong>Kaixiang</strong>
+            <span>Refractory control</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item is-active" type="button" data-page="overview">
+            <span>01</span>Overview
+          </button>
+          <button class="nav-item" type="button" data-page="inventory">
+            <span>02</span>Inventory
+          </button>
+          <button class="nav-item" type="button" data-page="alerts">
+            <span>03</span>Alerts
+          </button>
+          <button class="nav-item" type="button" data-page="forecast">
+            <span>04</span>Demand signal
+          </button>
+          <button class="nav-item" type="button" data-page="data">
+            <span>05</span>Data lineage
+          </button>
+        </nav>
+
+        <div class="sidebar-status">
+          <span class="status-light" aria-hidden="true"></span>
+          <div>
+            <strong id="platform-mode">Loading platform</strong>
+            <span id="sidebar-freshness">Checking data</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Inventory intelligence / pilot warehouse network</p>
+            <h1 id="page-title">Inventory overview</h1>
+          </div>
+          <div class="topbar-actions">
+            <label class="global-select">
+              <span>Warehouse</span>
+              <select id="global-warehouse">
+                <option value="all">All warehouses</option>
+              </select>
+            </label>
+            <button class="icon-button" id="refresh-button" type="button" aria-label="Refresh data">
+              ↻
+            </button>
+          </div>
+        </header>
+
+        <main id="main-content" tabindex="-1">
+          <section class="page is-active" data-page-panel="overview" aria-labelledby="overview-heading">
+            <div class="hero-strip">
+              <div>
+                <p class="eyebrow">Today’s operating question</p>
+                <h2 id="overview-heading">Where should inventory planners act first?</h2>
+                <p>
+                  Monitor available stock, incoming supply, and external steel demand before approving
+                  replenishment.
+                </p>
+              </div>
+              <div class="hero-signal">
+                <span class="signal-label">External demand signal</span>
+                <strong id="hero-signal-value">—</strong>
+                <span id="hero-signal-copy">Forecast loading</span>
+              </div>
+            </div>
+
+            <div class="metric-grid" aria-label="Inventory key performance indicators">
+              <article class="metric-card metric-primary">
+                <span>Inventory value</span>
+                <strong id="metric-value">—</strong>
+                <small id="metric-value-context">Across all warehouses</small>
+              </article>
+              <article class="metric-card">
+                <span>Available stock</span>
+                <strong id="metric-available">—</strong>
+                <small>Units after reservations</small>
+              </article>
+              <article class="metric-card metric-alert">
+                <span>Items requiring action</span>
+                <strong id="metric-risk">—</strong>
+                <small id="metric-risk-context">Low, critical, or out of stock</small>
+              </article>
+              <article class="metric-card">
+                <span>Healthy inventory lines</span>
+                <strong id="metric-health">—</strong>
+                <small>At or above safety stock</small>
+              </article>
+            </div>
+
+            <div class="dashboard-grid">
+              <article class="panel panel-wide">
+                <div class="panel-heading">
+                  <div>
+                    <p class="eyebrow">Operational movement</p>
+                    <h3>Monthly sales and purchases</h3>
+                    <p>Quantity across selected warehouses, latest 24 months.</p>
+                  </div>
+                  <div class="legend-inline" aria-hidden="true">
+                    <span><i class="legend-line legend-sales"></i>Sales</span>
+                    <span><i class="legend-line legend-purchase"></i>Purchases</span>
+                  </div>
+                </div>
+                <div class="chart-container chart-tall">
+                  <canvas id="activity-chart" aria-label="Monthly sales and purchases line chart"></canvas>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="eyebrow">Working capital</p>
+                    <h3>Inventory value by category</h3>
+                    <p>Current quantity multiplied by unit price.</p>
+                  </div>
+                </div>
+                <div class="chart-container">
+                  <canvas id="category-chart" aria-label="Inventory value by category bar chart"></canvas>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="eyebrow">Priority queue</p>
+                    <h3>Largest replenishment gaps</h3>
+                    <p>Suggested quantity after incoming inventory.</p>
+                  </div>
+                </div>
+                <div class="chart-container">
+                  <canvas id="risk-chart" aria-label="Largest replenishment gaps bar chart"></canvas>
+                </div>
+              </article>
+            </div>
+
+            <article class="panel table-panel">
+              <div class="panel-heading panel-heading-row">
+                <div>
+                  <p class="eyebrow">Planner worklist</p>
+                  <h3>Highest-priority inventory alerts</h3>
+                  <p>Recommendations require human review before procurement.</p>
+                </div>
+                <button class="text-button" type="button" data-go-to="alerts">Review all alerts →</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Warehouse</th>
+                      <th>Status</th>
+                      <th class="number">Available</th>
+                      <th class="number">Safety stock</th>
+                      <th class="number">Suggested order</th>
+                    </tr>
+                  </thead>
+                  <tbody id="overview-alert-table"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="page" data-page-panel="inventory" aria-labelledby="inventory-heading">
+            <div class="section-intro">
+              <div>
+                <p class="eyebrow">Inventory register</p>
+                <h2 id="inventory-heading">Find the exact material before promising availability.</h2>
+                <p>
+                  Available stock equals current stock minus reservations. Similar refractory products
+                  are not assumed to be interchangeable.
+                </p>
+              </div>
+              <button class="primary-button" id="export-button" type="button">Export filtered CSV</button>
+            </div>
+
+            <article class="panel filter-panel">
+              <label class="search-field">
+                <span>Search</span>
+                <input id="inventory-search" type="search" placeholder="Product name or code" />
+              </label>
+              <label>
+                <span>Category</span>
+                <select id="category-filter">
+                  <option value="all">All categories</option>
+                </select>
+              </label>
+              <label>
+                <span>Supplier</span>
+                <select id="supplier-filter">
+                  <option value="all">All suppliers</option>
+                </select>
+              </label>
+              <label>
+                <span>Status</span>
+                <select id="status-filter">
+                  <option value="all">All statuses</option>
+                  <option value="Out of stock">Out of stock</option>
+                  <option value="Critical">Critical</option>
+                  <option value="Low">Low</option>
+                  <option value="Healthy">Healthy</option>
+                </select>
+              </label>
+              <button class="secondary-button" id="clear-filters" type="button">Clear filters</button>
+            </article>
+
+            <article class="panel table-panel">
+              <div class="table-toolbar">
+                <span id="inventory-count">0 inventory lines</span>
+                <span>Sorted by operational priority</span>
+              </div>
+              <div class="table-wrap table-wrap-large">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Warehouse</th>
+                      <th>Status</th>
+                      <th class="number">Current</th>
+                      <th class="number">Reserved</th>
+                      <th class="number">Available</th>
+                      <th class="number">In transit</th>
+                      <th class="number">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody id="inventory-table"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section class="page" data-page-panel="alerts" aria-labelledby="alerts-heading">
+            <div class="section-intro">
+              <div>
+                <p class="eyebrow">Human-in-the-loop controls</p>
+                <h2 id="alerts-heading">Review exceptions before creating a purchase request.</h2>
+                <p>
+                  The system calculates a replenishment gap, but a planner must acknowledge each alert
+                  and approve any procurement action.
+                </p>
+              </div>
+              <div class="compact-stat">
+                <span>Open alerts</span>
+                <strong id="open-alert-count">—</strong>
+              </div>
+            </div>
+            <div class="alert-layout">
+              <div id="alert-list" class="alert-list" aria-live="polite"></div>
+              <aside class="panel control-note">
+                <p class="eyebrow">Decision guardrails</p>
+                <h3>What the recommendation considers</h3>
+                <ol>
+                  <li>Available inventory after reservations</li>
+                  <li>Safety stock for the selected warehouse</li>
+                  <li>Confirmed inventory already in transit</li>
+                  <li>External demand direction as context</li>
+                </ol>
+                <p class="note">
+                  Supplier capacity, contract terms, and production schedules remain outside the model
+                  and require planner review.
+                </p>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="forecast" aria-labelledby="forecast-heading">
+            <div class="section-intro">
+              <div>
+                <p class="eyebrow">External demand context</p>
+                <h2 id="forecast-heading">Steel production provides an early signal for refractory demand.</h2>
+                <p>
+                  The production deployment uses BigQuery ML ARIMA_PLUS. The local preview uses a
+                  seasonal baseline and is labeled accordingly.
+                </p>
+              </div>
+              <div class="compact-stat forecast-stat">
+                <span>12-month direction</span>
+                <strong id="forecast-direction">—</strong>
+              </div>
+            </div>
+
+            <article class="panel forecast-panel">
+              <div class="panel-heading panel-heading-row">
+                <div>
+                  <p class="eyebrow">Federal Reserve industrial production index</p>
+                  <h3>Observed steel activity and 12-month forecast</h3>
+                  <p>Index 2017 = 100; monthly, not seasonally adjusted.</p>
+                </div>
+                <span class="source-chip" id="forecast-method">Loading method</span>
+              </div>
+              <div class="chart-container chart-forecast">
+                <canvas id="forecast-chart" aria-label="Observed steel activity and forecast line chart"></canvas>
+              </div>
+            </article>
+
+            <div class="forecast-detail-grid">
+              <article class="panel">
+                <p class="eyebrow">Interpretation</p>
+                <h3 id="forecast-takeaway">Forecast loading</h3>
+                <p id="forecast-explanation">
+                  The forecast is an external demand signal, not a product-level sales prediction.
+                </p>
+              </article>
+              <article class="panel table-panel">
+                <div class="panel-heading">
+                  <div>
+                    <p class="eyebrow">Forecast output</p>
+                    <h3>Next six monthly observations</h3>
+                  </div>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        <th class="number">Forecast</th>
+                        <th class="number">Lower bound</th>
+                        <th class="number">Upper bound</th>
+                      </tr>
+                    </thead>
+                    <tbody id="forecast-table"></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="data" aria-labelledby="data-heading">
+            <div class="section-intro">
+              <div>
+                <p class="eyebrow">Source transparency</p>
+                <h2 id="data-heading">Every metric has a defined source, grain, and limitation.</h2>
+                <p>
+                  Public industry data is kept separate from synthetic company operations data throughout
+                  the pipeline.
+                </p>
+              </div>
+            </div>
+
+            <div class="source-grid">
+              <article class="source-card source-real">
+                <span>Real public data</span>
+                <h3>Steel industrial production</h3>
+                <p>Federal Reserve Board via FRED series IPG3311A2N.</p>
+                <dl>
+                  <div><dt>Grain</dt><dd>Monthly</dd></div>
+                  <div><dt>Coverage</dt><dd id="industry-coverage">—</dd></div>
+                  <div><dt>Use</dt><dd>External demand signal</dd></div>
+                </dl>
+              </article>
+              <article class="source-card">
+                <span>Synthetic operational data</span>
+                <h3>Products, inventory, and transactions</h3>
+                <p>Generated for the Kaixiang course case; no customer or confidential company data.</p>
+                <dl>
+                  <div><dt>Grain</dt><dd>Product × warehouse</dd></div>
+                  <div><dt>Coverage</dt><dd id="inventory-coverage">—</dd></div>
+                  <div><dt>Use</dt><dd>Inventory operations</dd></div>
+                </dl>
+              </article>
+            </div>
+
+            <article class="panel pipeline-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Reference architecture</p>
+                  <h3>Raw → curated → warehouse → AI → application</h3>
+                  <p>Each managed cloud service performs a distinct role in the production pipeline.</p>
+                </div>
+              </div>
+              <div class="pipeline" aria-label="Cloud data pipeline">
+                <div><span>01</span><strong>Batch ingestion</strong><small>Public + synthetic CSV</small></div>
+                <b aria-hidden="true">→</b>
+                <div><span>02</span><strong>Cloud Storage</strong><small>Raw and curated zones</small></div>
+                <b aria-hidden="true">→</b>
+                <div><span>03</span><strong>BigQuery</strong><small>Typed tables and views</small></div>
+                <b aria-hidden="true">→</b>
+                <div><span>04</span><strong>BigQuery ML</strong><small>ARIMA_PLUS forecast</small></div>
+                <b aria-hidden="true">→</b>
+                <div><span>05</span><strong>Cloud Run</strong><small>Planner application</small></div>
+              </div>
+            </article>
+
+            <article class="panel methodology">
+              <div>
+                <p class="eyebrow">Metric definitions</p>
+                <h3>Inventory calculations</h3>
+              </div>
+              <dl>
+                <div>
+                  <dt>Available stock</dt>
+                  <dd>Current quantity minus reserved quantity.</dd>
+                </div>
+                <div>
+                  <dt>Inventory value</dt>
+                  <dd>Current quantity multiplied by unit price.</dd>
+                </div>
+                <div>
+                  <dt>Action required</dt>
+                  <dd>Available quantity is below warehouse safety stock.</dd>
+                </div>
+                <div>
+                  <dt>Suggested order</dt>
+                  <dd>150% of safety stock minus available and in-transit quantities; minimum zero.</dd>
+                </div>
+              </dl>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
