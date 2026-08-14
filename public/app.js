@@ -17,10 +17,13 @@ const pageTitles = {
   inventory: "Inventory register",
   alerts: "Action queue",
   forecast: "External demand signal",
-  data: "Data lineage"
+  data: "Data lineage",
+  assistant: "AI planning assistant"
 };
 
 const numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const quantityLabel = (value, unit) =>
+  `${numberFormat.format(value)} ${value === 1 ? unit : `${unit}s`}`;
 const currencyFormat = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -650,6 +653,100 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 3400);
 }
 
+function renderAgentResult(result) {
+  $("#agent-answer-panel").hidden = false;
+  $("#agent-sources-panel").hidden = false;
+  $("#agent-trace-panel").hidden = false;
+  $("#agent-answer").textContent = result.answer;
+  setText("#agent-answer-mode", result.model ? `${result.generation_mode} · ${result.model}` : result.generation_mode);
+
+  $("#agent-sources").innerHTML = result.sources
+    .map(
+      (source) => `
+        <li>
+          <span>${escapeHtml(source.citation)}</span>
+          <div>
+            <strong>${escapeHtml(source.title)}</strong>
+            <small>${escapeHtml(source.source)} · relevance ${escapeHtml(source.score)}</small>
+            <p>${escapeHtml(source.excerpt)}</p>
+          </div>
+        </li>`
+    )
+    .join("");
+
+  $("#agent-trace").innerHTML = result.trace.steps
+    .map(
+      (step) => `
+        <li>
+          <span>${String(step.sequence).padStart(2, "0")}</span>
+          <div><strong>${escapeHtml(step.type.replaceAll("_", " "))}</strong><p>${escapeHtml(
+            step.summary
+          )}</p></div>
+        </li>`
+    )
+    .join("");
+
+  const toolPanel = $("#agent-tool-panel");
+  toolPanel.hidden = !result.tool_result;
+  if (result.tool_result) {
+    const tool = result.tool_result;
+    const fields = [
+      ["Product", `${tool.product_code} · ${tool.product_name}`],
+      ["Warehouse", tool.warehouse],
+      ["Status", tool.status],
+      ["Available", quantityLabel(tool.available_quantity, tool.unit)],
+      ["Safety stock", quantityLabel(tool.safety_stock, tool.unit)],
+      ["In transit", quantityLabel(tool.in_transit_quantity, tool.unit)],
+      ["Suggested order", quantityLabel(tool.suggested_order_quantity, tool.unit)],
+      ["Control", "Human approval required"]
+    ];
+    $("#agent-tool-result").innerHTML = fields
+      .map(
+        ([label, value]) =>
+          `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`
+      )
+      .join("");
+  }
+}
+
+async function askAgent(question) {
+  const progress = $("#assistant-progress");
+  const submit = $("#assistant-submit");
+  progress.textContent = "Retrieving evidence and checking tool access…";
+  submit.disabled = true;
+  try {
+    const response = await fetch("/api/agent/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.detail || result.error || "Agent request failed.");
+    renderAgentResult(result);
+    progress.textContent = `Trace ${result.trace.trace_id.slice(0, 8)} completed.`;
+  } catch (error) {
+    progress.textContent = error.message;
+    showToast(error.message);
+  } finally {
+    submit.disabled = false;
+  }
+}
+
+async function loadAgentStatus() {
+  try {
+    const response = await fetch("/api/agent/status", { cache: "no-store" });
+    if (!response.ok) return;
+    const status = await response.json();
+    setText("#agent-mode", status.generation_mode);
+    setText(
+      "#agent-model",
+      status.model ? `${status.model} · grounded retrieval` : "Grounded local generation · no cloud key"
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function bindEvents() {
   $$(".nav-item").forEach((button) =>
     button.addEventListener("click", () => navigate(button.dataset.page))
@@ -685,6 +782,16 @@ function bindEvents() {
   });
   $("#export-button").addEventListener("click", exportCsv);
   $("#refresh-button").addEventListener("click", loadData);
+  $("#assistant-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    askAgent($("#assistant-question").value.trim());
+  });
+  $$('[data-agent-question]').forEach((button) =>
+    button.addEventListener("click", () => {
+      $("#assistant-question").value = button.dataset.agentQuestion;
+      askAgent(button.dataset.agentQuestion);
+    })
+  );
 }
 
 async function loadData() {
@@ -720,3 +827,4 @@ async function loadData() {
 bindEvents();
 navigate(location.hash.slice(1) || "overview");
 loadData();
+loadAgentStatus();
