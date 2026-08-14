@@ -41,6 +41,9 @@
           <button class="nav-item" type="button" data-page="data">
             <span>05</span>Data lineage
           </button>
+          <button class="nav-item" type="button" data-page="assistant">
+            <span>06</span>AI assistant
+          </button>
         </nav>
 
         <div class="sidebar-status">
@@ -429,6 +432,104 @@
                 </div>
               </dl>
             </article>
+          </section>
+
+          <section class="page" data-page-panel="assistant" aria-labelledby="assistant-heading">
+            <div class="section-intro assistant-intro">
+              <div>
+                <p class="eyebrow">Grounded RAG + one read-only tool</p>
+                <h2 id="assistant-heading">Ask the inventory planning agent.</h2>
+                <p>
+                  Answers are grounded in curated lake data and project documentation. A replenishment
+                  recommendation never creates a purchase order and always requires human approval.
+                </p>
+              </div>
+              <div class="agent-status-card">
+                <span>Generation mode</span>
+                <strong id="agent-mode">Checking</strong>
+                <small id="agent-model">Loading agent controls</small>
+              </div>
+            </div>
+
+            <div class="assistant-layout">
+              <div class="assistant-main">
+                <article class="panel assistant-panel">
+                  <form id="assistant-form">
+                    <label for="assistant-question">Planner question</label>
+                    <textarea
+                      id="assistant-question"
+                      rows="4"
+                      maxlength="1000"
+                      placeholder="Example: Should we replenish MCB-001 at Chicago, and why?"
+                    ></textarea>
+                    <div class="assistant-actions">
+                      <button class="primary-button" id="assistant-submit" type="submit">Ask agent</button>
+                      <span id="assistant-progress" role="status" aria-live="polite"></span>
+                    </div>
+                  </form>
+                  <div class="sample-questions" aria-label="Sample questions">
+                    <button type="button" data-agent-question="Should we replenish MCB-001 at Chicago, and why?">
+                      MCB-001 · Chicago
+                    </button>
+                    <button type="button" data-agent-question="How is suggested order quantity calculated?">
+                      Explain the calculation
+                    </button>
+                    <button type="button" data-agent-question="What data is real and what data is synthetic?">
+                      Explain data lineage
+                    </button>
+                  </div>
+                </article>
+
+                <article class="panel agent-answer-panel" id="agent-answer-panel" hidden>
+                  <div class="panel-heading panel-heading-row">
+                    <div>
+                      <p class="eyebrow">Grounded response</p>
+                      <h3>Agent answer</h3>
+                    </div>
+                    <span class="source-chip" id="agent-answer-mode">—</span>
+                  </div>
+                  <div class="agent-answer" id="agent-answer"></div>
+                </article>
+
+                <article class="panel" id="agent-tool-panel" hidden>
+                  <div class="panel-heading">
+                    <div>
+                      <p class="eyebrow">Tool action</p>
+                      <h3>recommend_replenishment</h3>
+                      <p>Read-only result; no purchase order was created.</p>
+                    </div>
+                  </div>
+                  <div class="tool-result-grid" id="agent-tool-result"></div>
+                </article>
+              </div>
+
+              <aside class="assistant-side">
+                <article class="panel agent-guardrails">
+                  <p class="eyebrow">Agent Card</p>
+                  <h3>Authorization scope</h3>
+                  <ul>
+                    <li>Retrieve curated evidence</li>
+                    <li>Calculate a replenishment recommendation</li>
+                    <li>Maximum financial commitment: $0</li>
+                    <li>Human approval required for procurement</li>
+                  </ul>
+                  <span class="safety-badge">Recommendation only</span>
+                </article>
+
+                <article class="panel" id="agent-sources-panel" hidden>
+                  <p class="eyebrow">RAG evidence</p>
+                  <h3>Retrieved sources</h3>
+                  <ol class="agent-sources" id="agent-sources"></ol>
+                </article>
+
+                <article class="panel" id="agent-trace-panel" hidden>
+                  <p class="eyebrow">Auditable trace</p>
+                  <h3>Reasoning and actions</h3>
+                  <p class="trace-notice">Action summaries only; hidden chain-of-thought is not collected.</p>
+                  <ol class="agent-trace" id="agent-trace"></ol>
+                </article>
+              </aside>
+            </div>
           </section>
         </main>
       </div>

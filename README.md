@@ -10,6 +10,9 @@ A cloud-ready inventory control product for a refractory materials company. It c
 - Requires a human acknowledgment before any procurement follow-up
 - Shows monthly synthetic sales and purchase activity
 - Shows real steel-industry history and a labeled forecast
+- Provides a grounded RAG assistant with cited curated-lake evidence
+- Exposes one read-only replenishment recommendation through MCP
+- Captures an auditable action trace without collecting hidden chain-of-thought
 - Exports filtered inventory to CSV
 - Documents source lineage and metric definitions in the product
 
@@ -33,6 +36,23 @@ npm start
 
 Open `http://localhost:8080`.
 
+Open the **AI assistant** page to run the Module 8 RAG and agent workflow. Without
+cloud credentials, the application uses a clearly labeled local grounded mode.
+With Vertex AI configured in `.env.example`, Gemini generates the final response
+from the same retrieved evidence and safety controls.
+
+## Agent and MCP demonstrations
+
+```bash
+npm run agent:demo
+npm run mcp:demo
+```
+
+The MCP server can also be started directly with `npm run mcp:server`. It exposes
+one tool, `recommend_replenishment`, plus a read-only Agent Card resource. See
+[`docs/module-8-agentic-ai.md`](docs/module-8-agentic-ai.md) for architecture,
+configuration, trace policy, assignment mapping, and screenshot guidance.
+
 The local version uses the generated serving snapshot and a clearly labeled seasonal baseline forecast. When `GCP_PROJECT_ID` and `BQ_DATASET` are configured, the server reads the BigQuery serving views and BigQuery ML output.
 
 ## Project structure
@@ -43,6 +63,7 @@ data/
   curated/             Typed CSV inputs for BigQuery
   serving/             Local application snapshot
 docs/                  Architecture, data dictionary, runbook, evidence checklist
+agent/                 RAG, tool, Agent Card, trace store, and MCP server
 public/                Inventory application
 schemas/               Explicit BigQuery table schemas
 scripts/               Data generation, validation, and GCP deployment

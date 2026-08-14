@@ -8,6 +8,9 @@
     "fetch:fred": "node scripts/fetch-fred.mjs",
     "generate": "node scripts/generate-data.mjs",
     "validate:data": "node scripts/validate-data.mjs",
+    "agent:demo": "node scripts/agent-demo.mjs",
+    "mcp:server": "node agent/mcp-server.mjs",
+    "mcp:demo": "node scripts/mcp-demo.mjs",
     "dev": "node --watch server.mjs",
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs"
@@ -17,6 +20,10 @@
   },
   "dependencies": {
     "@google-cloud/bigquery": "^8.0.0",
-    "chart.js": "^4.4.9"
+    "@google/genai": "^2.17.1",
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "chart.js": "^4.4.9",
+    "zod": "^4.4.3"
   }
 }

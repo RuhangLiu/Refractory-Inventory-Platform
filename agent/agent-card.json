@@ -1,0 +1,24 @@
+{
+  "name": "Refractory Inventory Planning Agent",
+  "version": "1.0.0",
+  "description": "A grounded assistant over curated refractory inventory data with one read-only replenishment recommendation tool.",
+  "capabilities": {
+    "rag": true,
+    "tools": ["recommend_replenishment"],
+    "mcp": true,
+    "multimodal": false,
+    "a2a": false
+  },
+  "authorization_scope": {
+    "allowed_actions": ["retrieve_curated_evidence", "calculate_replenishment_recommendation"],
+    "prohibited_actions": ["create_purchase_order", "contact_supplier", "commit_funds"],
+    "maximum_financial_commitment_usd": 0,
+    "human_approval_required_for": ["all procurement actions"]
+  },
+  "data_policy": {
+    "operational_data": "synthetic course-case data",
+    "external_data": "public FRED series IPG3311A2N",
+    "personal_data": false
+  },
+  "trace_policy": "Records retrieved sources, tool arguments, tool results, and concise decision rationale; hidden chain-of-thought is not collected."
+}

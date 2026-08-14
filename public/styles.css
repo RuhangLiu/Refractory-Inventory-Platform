@@ -39,7 +39,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -51,6 +52,7 @@ select {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+textarea:focus-visible,
 a:focus-visible {
   outline: 3px solid rgba(47, 100, 143, 0.35);
   outline-offset: 2px;
@@ -939,6 +941,201 @@ dd {
   font-size: 12px;
 }
 
+.assistant-intro {
+  align-items: center;
+}
+
+.agent-status-card {
+  min-width: 230px;
+  padding: 16px 20px;
+  display: grid;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.agent-status-card span,
+.agent-status-card small {
+  color: #b7c3c7;
+}
+
+.agent-status-card strong {
+  margin: 3px 0;
+  color: #f1b05f;
+  font-size: 22px;
+}
+
+.assistant-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.75fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.assistant-main,
+.assistant-side {
+  display: grid;
+  gap: 20px;
+}
+
+.assistant-panel form {
+  display: grid;
+  gap: 9px;
+}
+
+.assistant-panel label {
+  font-weight: 750;
+}
+
+.assistant-panel textarea {
+  width: 100%;
+  min-height: 118px;
+  padding: 14px;
+  resize: vertical;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line-dark);
+  border-radius: 10px;
+  line-height: 1.55;
+}
+
+.assistant-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.assistant-actions span {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.assistant-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.sample-questions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sample-questions button {
+  padding: 8px 11px;
+  color: var(--blue);
+  background: var(--blue-soft);
+  border: 0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.agent-answer {
+  color: #263840;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.agent-guardrails ul {
+  margin: 14px 0 18px;
+  padding-left: 19px;
+  color: var(--ink-soft);
+}
+
+.agent-guardrails li + li {
+  margin-top: 7px;
+}
+
+.safety-badge {
+  display: inline-flex;
+  padding: 6px 10px;
+  color: #436037;
+  background: var(--olive-soft);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.agent-sources,
+.agent-trace {
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  list-style: none;
+}
+
+.agent-sources li,
+.agent-trace li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.agent-sources li > span,
+.agent-trace li > span {
+  width: 32px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: var(--blue);
+  background: var(--blue-soft);
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.agent-sources strong,
+.agent-sources small,
+.agent-trace strong {
+  display: block;
+}
+
+.agent-sources small {
+  margin: 2px 0 5px;
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.agent-sources p,
+.agent-trace p,
+.trace-notice {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+
+.agent-trace strong {
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.tool-result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tool-result-grid div {
+  padding: 12px;
+  display: grid;
+  background: var(--paper);
+  border-radius: 9px;
+}
+
+.tool-result-grid span {
+  color: var(--ink-soft);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.tool-result-grid strong {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
 .empty-state {
   padding: 44px 20px;
   color: var(--ink-soft);
@@ -1012,6 +1209,10 @@ dd {
   }
 
   .alert-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1154,6 +1355,17 @@ dd {
 
   .methodology dl {
     grid-template-columns: 1fr;
+  }
+
+  .agent-status-card {
+    margin-top: 22px;
+    padding: 16px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-left: 0;
+  }
+
+  .tool-result-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .chart-tall,

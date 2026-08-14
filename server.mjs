@@ -2,11 +2,15 @@ import { createServer } from "node:http";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { getAgentStatus, runInventoryAgent } from "./agent/assistant.mjs";
+import { recommendReplenishment } from "./agent/replenishment-tool.mjs";
+import { listTraces } from "./agent/trace-store.mjs";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(rootDir, "public");
 const localDashboardPath = path.join(rootDir, "data", "serving", "dashboard.json");
 const localActionsPath = path.join(rootDir, "data", "serving", "alert-actions.json");
+const agentCardPath = path.join(rootDir, "agent", "agent-card.json");
 const port = Number(process.env.PORT || 8080);
 
 const mimeTypes = {
@@ -213,8 +217,31 @@ const server = createServer(async (request, response) => {
       jsonResponse(response, 200, await getActions());
       return;
     }
+    if (request.method === "GET" && url.pathname === "/api/agent/status") {
+      jsonResponse(response, 200, getAgentStatus());
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/agent/card") {
+      jsonResponse(response, 200, JSON.parse(await readFile(agentCardPath, "utf8")));
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/agent/traces") {
+      jsonResponse(response, 200, {
+        traces: listTraces(url.searchParams.get("limit"))
+      });
+      return;
+    }
     if (request.method === "POST" && url.pathname === "/api/acknowledgments") {
       jsonResponse(response, 201, await saveAction(await readRequestJson(request)));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/agent/ask") {
+      const { question } = await readRequestJson(request);
+      jsonResponse(response, 200, await runInventoryAgent(question));
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/agent/recommend") {
+      jsonResponse(response, 200, await recommendReplenishment(await readRequestJson(request)));
       return;
     }
     if (request.method === "GET") {
