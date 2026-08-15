@@ -45,7 +45,7 @@ async def main() -> None:
     )
     final_text = None
     async for event in app.async_stream_query(
-        user_id="module8-smoke-test",
+        user_id="inventory-smoke-test",
         message=prompt,
     ):
         event_data = event if isinstance(event, dict) else event.model_dump()

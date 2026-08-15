@@ -1,6 +1,6 @@
 # Authenticated Inventory MCP Server
 
-This service implements the third required Module 8 evolution step: the
+This service implements the remote MCP evolution step: the
 read-only inventory lookup is exposed as a remote MCP tool that an independent
 client can list and call.
 

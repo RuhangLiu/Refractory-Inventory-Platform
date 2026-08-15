@@ -64,7 +64,7 @@ async def main() -> None:
     final_text = None
     event_summaries = []
     async for event in remote_agent.async_stream_query(
-        user_id="module8-remote-acceptance",
+        user_id="inventory-remote-acceptance",
         message=prompt,
     ):
         event_data = _event_to_data(event)

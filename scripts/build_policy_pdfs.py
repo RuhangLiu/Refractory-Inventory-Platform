@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the two RAG policy PDFs used by the Module 8 Agent Studio corpus."""
+"""Build the two RAG policy PDFs used by the Agent Studio corpus."""
 
 from pathlib import Path
 
@@ -269,7 +269,7 @@ def build_policy(policy):
         bottomMargin=0.56 * inch,
         title=policy["title"],
         author="Ruhang Liu",
-        subject="Module 8 RAG policy corpus",
+        subject="Agent Studio RAG policy corpus",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="policy-frame")
     doc.addPageTemplates(

@@ -12,7 +12,7 @@ const transport = new StdioClientTransport({
 });
 transport.stderr?.on("data", (chunk) => process.stderr.write(chunk));
 
-const client = new Client({ name: "module-8-demo-client", version: "1.0.0" });
+const client = new Client({ name: "inventory-demo-client", version: "1.0.0" });
 try {
   await client.connect(transport);
   const toolList = await client.listTools();
@@ -23,7 +23,7 @@ try {
   console.log(
     JSON.stringify(
       {
-        connected_client: "module-8-demo-client",
+        connected_client: "inventory-demo-client",
         tools: toolList.tools.map((tool) => ({ name: tool.name, description: tool.description })),
         call: {
           name: "recommend_replenishment",
