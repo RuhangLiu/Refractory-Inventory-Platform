@@ -1,3 +1,4 @@
+# Local development and generated artifacts
 .git
 .env
 node_modules
