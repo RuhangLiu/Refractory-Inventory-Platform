@@ -41,6 +41,15 @@ cloud credentials, the application uses a clearly labeled local grounded mode.
 With Vertex AI configured in `.env.example`, Gemini generates the final response
 from the same retrieved evidence and safety controls.
 
+Use this acceptance question:
+
+> Should we replenish MCB-001 at Chicago, and why?
+
+The verified local preview displays the suggested order quantity `102`, cited
+curated evidence, the read-only tool result, an auditable action trace, a maximum
+financial authority of `$0`, and the required human approval. Local mode is a UI
+preview; it is not a substitute for the managed three-layer Agent Engine trace.
+
 ## Agent and MCP demonstrations
 
 ```bash
@@ -52,6 +61,9 @@ The MCP server can also be started directly with `npm run mcp:server`. It expose
 one tool, `recommend_replenishment`, plus a read-only Agent Card resource. See
 [`docs/module-8-agentic-ai.md`](docs/module-8-agentic-ai.md) for architecture,
 configuration, trace policy, assignment mapping, and screenshot guidance.
+
+The exact five-slide evidence plan is in
+[`docs/module-8-screenshot-checklist.md`](docs/module-8-screenshot-checklist.md).
 
 The local version uses the generated serving snapshot and a clearly labeled seasonal baseline forecast. When `GCP_PROJECT_ID` and `BQ_DATASET` are configured, the server reads the BigQuery serving views and BigQuery ML output.
 
@@ -71,9 +83,42 @@ sql/                   Business, quality, and BigQuery ML SQL
 tests/                 Data and metric checks
 ```
 
-## Cloud deployment
+## Managed Google Cloud architecture
 
-Read [`docs/gcp-runbook.md`](docs/gcp-runbook.md) before creating cloud resources. The deployment script is intentionally not executed without project-owner approval because it enables APIs, creates billable resources, deploys a public service, and grants instructor access.
+The school-account project `refractory-inventory-platform` contains the three
+required grounding layers:
+
+- **Structured:** BigQuery dataset `kaixiang_inventory` and the fixed serving
+  view `serving_inventory`.
+- **Unstructured:** a GCS operational exception object under
+  `gs://ruhangliu-lake-curated/agent-inputs/`.
+- **Vector:** a Vertex AI RAG corpus containing the approved replenishment and
+  purchase-authorization policies.
+
+The existing Vertex AI Agent Engine is deployed at
+`projects/1052614770067/locations/us-west1/reasoningEngines/7636161031462453248`.
+Agent Registry supplies the managed GCS and BigQuery connections and registers
+the custom read-only inventory MCP service.
+
+### Private inventory MCP boundary
+
+`refractory-inventory-mcp` runs on Cloud Run in `us-central1` and exposes only
+`get_inventory_snapshot`. It accepts a product code and allowlisted warehouse,
+queries a fixed BigQuery view with parameterized SQL, and cannot modify data or
+execute procurement. Cloud Run authentication remains enabled: anonymous
+requests return HTTP 403, and the Agent Engine service identity is the approved
+invoker. The runtime mints a short-lived OIDC ID token for the canonical Cloud
+Run audience; no service-account key or long-lived bearer token is stored in the
+repository.
+
+Final managed-runtime validation exited successfully (`TEST_EXIT:0`) and
+returned quantity `102`, exception `EXC-2026-0814-001`, policy `RIC-POL-001`,
+and the mandatory human-approval boundary. Detailed evidence is documented in
+[`docs/module-8-agentic-ai.md`](docs/module-8-agentic-ai.md).
+
+Read [`docs/gcp-runbook.md`](docs/gcp-runbook.md) before making additional cloud
+changes. Do not broaden IAM roles, allow unauthenticated MCP access, or create a
+second Agent Engine merely for testing.
 
 ## Metric definitions
 

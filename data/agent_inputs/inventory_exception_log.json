@@ -1,0 +1,51 @@
+{
+  "log_version": "1.0",
+  "generated_at": "2026-08-14T22:00:00Z",
+  "data_classification": "synthetic_course_case",
+  "intended_gcs_uri": "gs://ruhangliu-lake-curated/agent-inputs/inventory_exception_log.json",
+  "purpose": "Operational context for grounded inventory planning decisions. These notes supplement, but do not replace, structured BigQuery inventory facts or approved RAG policies.",
+  "exceptions": [
+    {
+      "exception_id": "EXC-2026-0814-001",
+      "alert_id": "ALT-MCB-001-CHI",
+      "product_code": "MCB-001",
+      "warehouse": "Chicago",
+      "exception_type": "inbound_eta_change",
+      "severity": "high",
+      "observed_at": "2026-08-14T20:30:00Z",
+      "status": "open",
+      "summary": "The confirmed 90-piece inbound shipment remains in transit, but the carrier moved the estimated arrival three calendar days later.",
+      "operational_effect": "Count the confirmed in-transit quantity in the standard recommendation, but flag the timing risk and require a planner to verify the revised arrival date before procurement approval.",
+      "source_system": "synthetic_carrier_status_log",
+      "human_review_required": true
+    },
+    {
+      "exception_id": "EXC-2026-0814-002",
+      "alert_id": "ALT-MCB-002-HOU",
+      "product_code": "MCB-002",
+      "warehouse": "Houston",
+      "exception_type": "cycle_count_pending",
+      "severity": "medium",
+      "observed_at": "2026-08-14T19:15:00Z",
+      "status": "open",
+      "summary": "A routine cycle count is pending for one storage location. No discrepancy has been confirmed.",
+      "operational_effect": "Use the structured inventory record for analysis, disclose the pending count, and avoid any autonomous inventory adjustment.",
+      "source_system": "synthetic_warehouse_note",
+      "human_review_required": true
+    },
+    {
+      "exception_id": "EXC-2026-0814-003",
+      "alert_id": "ALT-MCB-003-CHI",
+      "product_code": "MCB-003",
+      "warehouse": "Chicago",
+      "exception_type": "supplier_lead_time_watch",
+      "severity": "low",
+      "observed_at": "2026-08-14T18:40:00Z",
+      "status": "monitoring",
+      "summary": "The preferred supplier reported potential variability around the documented 44-day lead time; no active shipment or purchase order is affected.",
+      "operational_effect": "Retain the documented lead time as the current planning fact and disclose the watch item in forward-looking recommendations.",
+      "source_system": "synthetic_supplier_advisory",
+      "human_review_required": false
+    }
+  ]
+}

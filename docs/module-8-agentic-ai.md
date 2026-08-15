@@ -6,7 +6,7 @@ The Refractory Inventory Planning Agent extends the existing curated lake and in
 
 1. **Grounded RAG assistant:** retrieves evidence from curated product and inventory CSV files plus the platform documentation, then returns an answer with `[S1]`, `[S2]`, and similar citations.
 2. **Agent with one tool:** calls `recommend_replenishment` only when the question contains a product code, a supported warehouse, and inventory-decision intent.
-3. **MCP server:** exposes that read-only tool over stdio so an independent MCP client can list and invoke it.
+3. **MCP server:** exposes the read-only inventory lookup both as a local stdio demonstration and as a private remote MCP service on Cloud Run. Agent Registry connects the deployed Agent Engine to the remote service with short-lived OIDC authentication.
 
 The design deliberately stops at a recommendation. It cannot create purchase orders, contact suppliers, or commit funds.
 
@@ -32,6 +32,11 @@ Tool router -- product + warehouse + intent? --> recommend_replenishment
              Answer + citations + auditable action trace
 
 Independent MCP client --> stdio MCP server --> recommend_replenishment
+
+Managed Agent Engine --> Agent Registry --> OIDC-authenticated Cloud Run MCP
+                                             |
+                                             v
+                               read-only BigQuery serving view
 ```
 
 ## Knowledge sources
@@ -105,6 +110,33 @@ The server exposes:
 - Tool: `recommend_replenishment`
 - Resource: `agent://refractory-inventory/card`
 
+## Managed GCP deployment evidence
+
+The production-style course deployment reuses the existing school-account GCP
+project and the existing Agent Engine. It does not create a second autonomous
+agent or grant the student account direct access to the private MCP endpoint.
+
+- GCP project: `refractory-inventory-platform` (`1052614770067`)
+- Existing Agent Engine: `projects/1052614770067/locations/us-west1/reasoningEngines/7636161031462453248`
+- Private Cloud Run service: `refractory-inventory-mcp`
+- Deployed revision: `refractory-inventory-mcp-00001-qdx`
+- MCP endpoint: `https://refractory-inventory-mcp-77qfs3f3uq-uc.a.run.app/mcp`
+- Agent Registry service: `projects/refractory-inventory-platform/locations/global/services/refractory-inventory-mcp`
+- Registry MCP resource: `projects/1052614770067/locations/global/mcpServers/agentregistry-00000000-0000-0000-a38e-a74b8db45db1`
+- MCP runtime identity: `refractory-inventory-mcp@refractory-inventory-platform.iam.gserviceaccount.com`
+- Authorized caller: `service-1052614770067@gcp-sa-aiplatform-re.iam.gserviceaccount.com`
+
+The Cloud Run service rejects unauthenticated requests with HTTP 403. The
+Agent Engine runtime mints a short-lived OIDC ID token for the canonical Cloud
+Run URL through the Agent Registry toolset `header_provider`; no service-account
+key or long-lived bearer token is stored in the repository.
+
+Final managed-runtime acceptance completed successfully (`TEST_EXIT:0`). For
+`MCB-001` at `Chicago`, the agent retrieved the BigQuery inventory snapshot,
+calculated a suggested order quantity of `102`, cited exception
+`EXC-2026-0814-001`, applied policy `RIC-POL-001`, and preserved mandatory human
+approval with a maximum autonomous financial commitment of `$0`.
+
 ## Auditable trace
 
 Each assistant request records:
@@ -130,7 +162,12 @@ The main difficulty was controlled action selection. The system must distinguish
 
 ### Step 3: Tool to MCP server
 
-The main difficulty was interoperability. The tool needed a strict schema, stable structured output, a stdio transport, error handling, and protocol-safe logging so a separate client could call it reliably.
+The main difficulty was interoperability and identity-aware access. The tool
+needed a strict schema, stable structured output, transport-safe logging, a
+private Cloud Run deployment, Agent Registry registration, and an OIDC token
+whose audience exactly matches the canonical Cloud Run service URL. The final
+remote test confirmed that the managed Agent Engine—not an unauthenticated
+browser session—can invoke the tool.
 
 ## Accountability and Agent Card answer
 

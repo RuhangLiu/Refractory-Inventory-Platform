@@ -1,0 +1,33 @@
+{
+  "tools": [
+    {
+      "name": "get_inventory_snapshot",
+      "title": "Get inventory snapshot",
+      "description": "Read one product-and-warehouse record from the fixed BigQuery serving_inventory view. The operation is read-only and never creates a purchase order.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "product_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{3}-\\d{3}$",
+            "description": "Synthetic product code such as MCB-001."
+          },
+          "warehouse": {
+            "type": "string",
+            "enum": ["Chicago", "Houston", "Pittsburgh"],
+            "description": "Exact synthetic warehouse name."
+          }
+        },
+        "required": ["product_code", "warehouse"],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get inventory snapshot",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ]
+}
