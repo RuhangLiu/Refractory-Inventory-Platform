@@ -14,7 +14,7 @@ const transport = new StreamableHTTPClientTransport(new URL(endpoint), {
   authProvider: { token: async () => token }
 });
 const client = new Client({
-  name: "module-8-independent-cloud-run-client",
+  name: "inventory-independent-cloud-run-client",
   version: "1.0.0"
 });
 
@@ -29,7 +29,7 @@ try {
   console.log(
     JSON.stringify(
       {
-        connected_client: "module-8-independent-cloud-run-client",
+        connected_client: "inventory-independent-cloud-run-client",
         endpoint,
         tools: listed.tools.map((tool) => tool.name),
         call: {

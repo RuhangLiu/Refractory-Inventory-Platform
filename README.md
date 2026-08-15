@@ -36,7 +36,7 @@ npm start
 
 Open `http://localhost:8080`.
 
-Open the **AI assistant** page to run the Module 8 RAG and agent workflow. Without
+Open the **AI assistant** page to run the RAG and agent workflow. Without
 cloud credentials, the application uses a clearly labeled local grounded mode.
 With Vertex AI configured in `.env.example`, Gemini generates the final response
 from the same retrieved evidence and safety controls.
@@ -59,11 +59,11 @@ npm run mcp:demo
 
 The MCP server can also be started directly with `npm run mcp:server`. It exposes
 one tool, `recommend_replenishment`, plus a read-only Agent Card resource. See
-[`docs/module-8-agentic-ai.md`](docs/module-8-agentic-ai.md) for architecture,
+[`docs/agentic-ai-implementation.md`](docs/agentic-ai-implementation.md) for architecture,
 configuration, trace policy, assignment mapping, and screenshot guidance.
 
 The exact five-slide evidence plan is in
-[`docs/module-8-screenshot-checklist.md`](docs/module-8-screenshot-checklist.md).
+[`docs/agentic-ai-presentation-checklist.md`](docs/agentic-ai-presentation-checklist.md).
 
 The local version uses the generated serving snapshot and a clearly labeled seasonal baseline forecast. When `GCP_PROJECT_ID` and `BQ_DATASET` are configured, the server reads the BigQuery serving views and BigQuery ML output.
 
@@ -114,7 +114,7 @@ repository.
 Final managed-runtime validation exited successfully (`TEST_EXIT:0`) and
 returned quantity `102`, exception `EXC-2026-0814-001`, policy `RIC-POL-001`,
 and the mandatory human-approval boundary. Detailed evidence is documented in
-[`docs/module-8-agentic-ai.md`](docs/module-8-agentic-ai.md).
+[`docs/agentic-ai-implementation.md`](docs/agentic-ai-implementation.md).
 
 Read [`docs/gcp-runbook.md`](docs/gcp-runbook.md) before making additional cloud
 changes. Do not broaden IAM roles, allow unauthenticated MCP access, or create a

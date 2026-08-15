@@ -1,4 +1,4 @@
-# Module 8 — RAG, Agent, and MCP Implementation
+# RAG, Agent, and MCP Implementation
 
 ## Outcome
 
