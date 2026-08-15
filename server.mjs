@@ -1,3 +1,4 @@
+// Refractory Inventory Platform application server.
 import { createServer } from "node:http";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
