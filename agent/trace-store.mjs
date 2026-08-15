@@ -1,7 +1,11 @@
 import { appendFile, mkdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-const tracePath = new URL("../tmp/agent-traces.ndjson", import.meta.url);
+const traceDirectory =
+  process.env.NODE_ENV === "production"
+    ? new URL("file:///tmp/refractory-inventory-agent/")
+    : new URL("../tmp/", import.meta.url);
+const tracePath = new URL("agent-traces.ndjson", traceDirectory);
 const traces = [];
 
 export function createTrace(question) {
@@ -31,7 +35,7 @@ export async function finishTrace(trace, { status = "complete", persist = true }
   traces.unshift(structuredClone(trace));
   traces.splice(100);
   if (persist) {
-    await mkdir(new URL("../tmp/", import.meta.url), { recursive: true });
+    await mkdir(traceDirectory, { recursive: true });
     await appendFile(tracePath, `${JSON.stringify(trace)}\n`, "utf8");
   }
   return trace;
