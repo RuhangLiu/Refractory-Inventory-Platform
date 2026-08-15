@@ -8,6 +8,11 @@ COPY package*.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
 
 COPY public ./public
+COPY agent ./agent
+COPY scripts ./scripts
+COPY docs ./docs
+COPY README.md ./
+COPY data/curated ./data/curated
 COPY data/serving ./data/serving
 COPY server.mjs ./
 
