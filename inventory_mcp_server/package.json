@@ -1,0 +1,24 @@
+{
+  "name": "refractory-inventory-readonly-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Authenticated, read-only MCP server for the synthetic refractory inventory course case.",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "remote:test": "node scripts/remote-client.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^8.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.0.0"
+  }
+}

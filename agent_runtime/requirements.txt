@@ -1,0 +1,5 @@
+google-adk[a2a,agent-identity,mcp]>=1.29.0,<3
+google-cloud-aiplatform[agent_engines,adk]>=1.112.0
+google-auth>=2.40.0,<3
+cloudpickle>=3.0.0,<4
+pydantic>=2.10.0,<3
