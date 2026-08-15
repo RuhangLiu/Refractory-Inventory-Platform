@@ -10,7 +10,7 @@
     <title>Refractory Inventory Platform</title>
     <link rel="stylesheet" href="/styles.css" />
     <script src="/vendor/chart.umd.js" defer></script>
-    <script src="/app.js" type="module"></script>
+    <script src="/app.js?v=20260815a" type="module"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -62,6 +62,10 @@
             <h1 id="page-title">Inventory overview</h1>
           </div>
           <div class="topbar-actions">
+            <div class="language-toggle" role="group" aria-label="Language">
+              <button class="language-button is-active" type="button" data-language="en">EN</button>
+              <button class="language-button" type="button" data-language="zh">中文</button>
+            </div>
             <label class="global-select">
               <span>Warehouse</span>
               <select id="global-warehouse">

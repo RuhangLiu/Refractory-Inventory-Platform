@@ -3,7 +3,15 @@ import { retrieveKnowledge } from "./knowledge-base.mjs";
 import { recommendReplenishment } from "./replenishment-tool.mjs";
 import { addTraceStep, createTrace, finishTrace } from "./trace-store.mjs";
 
-const warehouses = ["Chicago", "Houston", "Pittsburgh"];
+const warehouseAliases = [
+  { name: "Chicago", aliases: ["chicago", "芝加哥"] },
+  { name: "Houston", aliases: ["houston", "休斯敦", "休斯顿"] },
+  { name: "Pittsburgh", aliases: ["pittsburgh", "匹兹堡"] }
+];
+
+function responseLanguage(question) {
+  return /[\u3400-\u9fff]/u.test(question) ? "zh" : "en";
+}
 
 function modelConfiguration() {
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
@@ -50,7 +58,10 @@ export function getAgentStatus() {
 
 function detectToolRequest(question) {
   const productCode = question.toUpperCase().match(/\b[A-Z]{3}-\d{3}\b/)?.[0];
-  const warehouse = warehouses.find((name) => question.toLowerCase().includes(name.toLowerCase()));
+  const normalized = question.toLowerCase();
+  const warehouse = warehouseAliases.find((entry) =>
+    entry.aliases.some((alias) => normalized.includes(alias))
+  )?.name;
   const intent = /replenish|reorder|order|purchase|available|stock|inventory|\u8865\u8d27|\u91c7\u8d2d|\u5e93\u5b58|\u5efa\u8bae/i.test(question);
   return productCode && warehouse && intent ? { productCode, warehouse } : null;
 }
@@ -69,7 +80,30 @@ function quantityLabel(value, unit) {
 }
 
 function localGroundedAnswer(question, sources, toolResult) {
+  const language = responseLanguage(question);
   if (toolResult) {
+    if (language === "zh") {
+      const status =
+        {
+          "Out of stock": "缺货",
+          Critical: "严重不足",
+          Low: "库存偏低",
+          Healthy: "健康"
+        }[toolResult.status] || toolResult.status;
+      const orderSentence = toolResult.suggested_order_quantity
+        ? `只读工具建议审核 ${quantityLabel(
+            toolResult.suggested_order_quantity,
+            toolResult.unit
+          )} 的订购量。`
+        : "只读工具目前不建议补货。";
+      return (
+        `${toolResult.product_code} 在 ${toolResult.warehouse} 的库存状态为${status}。` +
+        `可用库存为 ${quantityLabel(toolResult.available_quantity, toolResult.unit)}，` +
+        `安全库存为 ${quantityLabel(toolResult.safety_stock, toolResult.unit)}，` +
+        `在途数量为 ${quantityLabel(toolResult.in_transit_quantity, toolResult.unit)}。${orderSentence}` +
+        `这是只读建议；采购前必须由计划员人工审批。[S1]`
+      );
+    }
     const orderSentence = toolResult.suggested_order_quantity
       ? `The read-only tool suggests reviewing an order for ${quantityLabel(toolResult.suggested_order_quantity, toolResult.unit)}.`
       : "The read-only tool does not suggest a replenishment order at this time.";
@@ -84,6 +118,16 @@ function localGroundedAnswer(question, sources, toolResult) {
 
   const lead = sources[0];
   const supporting = sources[1];
+  if (language === "zh") {
+    return [
+      `针对“${question}”，检索到的项目证据提供了以下依据：`,
+      `${lead.text} [S1]`,
+      supporting ? `${supporting.text} [S2]` : "",
+      "如需准确的产品级决策，请提供产品编码和仓库名称，以便调用只读补货工具。"
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+  }
   return [
     `The retrieved project evidence most directly answers “${question}” with the following grounded information:`,
     `${lead.text} [S1]`,
@@ -95,6 +139,7 @@ function localGroundedAnswer(question, sources, toolResult) {
 }
 
 async function generateWithGemini(configuration, question, sources, toolResult) {
+  const language = responseLanguage(question);
   const toolEvidence = toolResult
     ? `\n\nREAD-ONLY TOOL RESULT:\n${JSON.stringify(toolResult, null, 2)}`
     : "";
@@ -105,7 +150,9 @@ async function generateWithGemini(configuration, question, sources, toolResult) 
     config: {
       temperature: 0.1,
       systemInstruction:
-        "You are an inventory planning assistant. Answer only from the supplied evidence. Cite evidence using [S1], [S2], and so on. If evidence is insufficient, say so. Tool output is a recommendation only: never claim that a purchase order was created, and always state that human approval is required. Do not reveal or invent hidden chain-of-thought."
+        `You are an inventory planning assistant. Answer only from the supplied evidence. Cite evidence using [S1], [S2], and so on. If evidence is insufficient, say so. Tool output is a recommendation only: never claim that a purchase order was created, and always state that human approval is required. Do not reveal or invent hidden chain-of-thought. Respond in ${
+          language === "zh" ? "Simplified Chinese" : "English"
+        }. Keep product names, product codes, supplier names, warehouse names, and source identifiers exactly as provided.`
     }
   });
   return response.text?.trim() || localGroundedAnswer(question, sources, toolResult);

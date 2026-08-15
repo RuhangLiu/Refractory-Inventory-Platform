@@ -187,7 +187,7 @@ async function serveStatic(requestPath, response) {
     const content = await readFile(normalized);
     response.writeHead(200, {
       "Content-Type": mimeTypes[path.extname(normalized)] || "application/octet-stream",
-      "Cache-Control": requested === "/index.html" ? "no-cache" : "public, max-age=3600"
+      "Cache-Control": isVendor ? "public, max-age=3600" : "no-cache"
     });
     response.end(content);
   } catch (error) {

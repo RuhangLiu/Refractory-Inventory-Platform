@@ -36,6 +36,19 @@ test("agent calls one tool and returns a safe auditable trace", async () => {
   assert.doesNotMatch(JSON.stringify(result.trace), /chain_of_thought/i);
 });
 
+test("agent answers Chinese questions in Chinese without translating product identifiers", async () => {
+  const result = await runInventoryAgent("是否应该为芝加哥的 MCB-001 补货？为什么？", {
+    forceLocal: true,
+    persistTrace: false
+  });
+  assert.equal(result.tool_call.name, "recommend_replenishment");
+  assert.equal(result.tool_call.arguments.warehouse, "Chicago");
+  assert.match(result.answer, /人工审批/);
+  assert.match(result.answer, /MCB-001/);
+  assert.match(result.answer, /Chicago/);
+  assert.match(result.answer, /[\u3400-\u9fff]/u);
+});
+
 test("Agent Card sets a zero-dollar authorization scope", async () => {
   const card = JSON.parse(
     await readFile(new URL("../agent/agent-card.json", import.meta.url), "utf8")

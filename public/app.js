@@ -1,8 +1,12 @@
+import { storedLanguage, translateText } from "./i18n.js?v=20260815";
+
 const state = {
   data: null,
   acknowledgments: [],
   warehouse: "all",
   page: "overview",
+  language: storedLanguage(),
+  lastAgentResult: null,
   filters: {
     search: "",
     category: "all",
@@ -21,24 +25,96 @@ const pageTitles = {
   assistant: "AI planning assistant"
 };
 
-const numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const locale = () => (state.language === "zh" ? "zh-CN" : "en-US");
+const numberFormat = {
+  format: (value) => new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 }).format(value)
+};
 const quantityLabel = (value, unit) =>
-  `${numberFormat.format(value)} ${value === 1 ? unit : `${unit}s`}`;
-const currencyFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1
-});
-const exactCurrencyFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0
-});
-const monthFormat = new Intl.DateTimeFormat("en-US", { month: "short", year: "2-digit" });
+  `${numberFormat.format(value)} ${state.language === "zh" || value === 1 ? unit : `${unit}s`}`;
+const currencyFormat = {
+  format: (value) =>
+    new Intl.NumberFormat(locale(), {
+      style: "currency",
+      currency: "USD",
+      notation: "compact",
+      maximumFractionDigits: 1
+    }).format(value)
+};
+const exactCurrencyFormat = {
+  format: (value) =>
+    new Intl.NumberFormat(locale(), {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    }).format(value)
+};
+const monthFormat = {
+  format: (value) =>
+    new Intl.DateTimeFormat(locale(), { month: "short", year: "2-digit" }).format(value)
+};
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const originalTextNodes = new WeakMap();
+const originalAttributes = new WeakMap();
+
+function t(text) {
+  return translateText(text, state.language);
+}
+
+function localized(english, chinese) {
+  return state.language === "zh" ? chinese : english;
+}
+
+function translateStaticInterface() {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (["SCRIPT", "STYLE"].includes(node.parentElement?.tagName)) continue;
+    if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.nodeValue);
+    const original = originalTextNodes.get(node);
+    const normalized = original.trim().replace(/\s+/g, " ");
+    if (!normalized) continue;
+    if (state.language === "en") {
+      node.nodeValue = original;
+    } else {
+      const translated = translateText(normalized, "zh");
+      if (translated !== normalized) {
+        const leading = original.match(/^\s*/)?.[0] || "";
+        const trailing = original.match(/\s*$/)?.[0] || "";
+        node.nodeValue = `${leading}${translated}${trailing}`;
+      }
+    }
+  }
+
+  for (const element of $$('[placeholder], [aria-label]')) {
+    if (!originalAttributes.has(element)) {
+      originalAttributes.set(element, {
+        placeholder: element.getAttribute("placeholder"),
+        ariaLabel: element.getAttribute("aria-label")
+      });
+    }
+    const original = originalAttributes.get(element);
+    if (original.placeholder != null) {
+      element.setAttribute("placeholder", translateText(original.placeholder, state.language));
+    }
+    if (original.ariaLabel != null) {
+      element.setAttribute("aria-label", translateText(original.ariaLabel, state.language));
+    }
+  }
+
+  document.documentElement.lang = state.language === "zh" ? "zh-CN" : "en";
+  document.title = localized("Refractory Inventory Platform", "耐火材料库存平台");
+  $$("[data-language]").forEach((button) => {
+    const active = button.dataset.language === state.language;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function statusLabel(status) {
+  return t(status);
+}
 
 function inventoryStatus(row) {
   if (row.available_quantity === 0) return "Out of stock";
@@ -106,7 +182,7 @@ function statusClass(status) {
 }
 
 function statusBadge(status) {
-  return `<span class="status-badge ${statusClass(status)}">${status}</span>`;
+  return `<span class="status-badge ${statusClass(status)}">${statusLabel(status)}</span>`;
 }
 
 function productCell(row) {
@@ -154,20 +230,25 @@ function renderMetrics() {
   setText("#metric-health", `${healthyPercent}%`);
   setText(
     "#metric-value-context",
-    state.warehouse === "all" ? "Across all warehouses" : `${state.warehouse} warehouse`
+    state.warehouse === "all"
+      ? t("Across all warehouses")
+      : localized(`${state.warehouse} warehouse`, `${state.warehouse} 仓库`)
   );
   setText(
     "#metric-risk-context",
-    `${risks.filter((row) => inventoryStatus(row) === "Out of stock").length} out of stock`
+    localized(
+      `${risks.filter((row) => inventoryStatus(row) === "Out of stock").length} out of stock`,
+      `${risks.filter((row) => inventoryStatus(row) === "Out of stock").length} 项缺货`
+    )
   );
   setText("#hero-signal-value", `${percent >= 0 ? "+" : ""}${percent.toFixed(1)}%`);
   setText(
     "#hero-signal-copy",
     percent >= 1
-      ? "Higher external activity by forecast horizon"
+      ? localized("Higher external activity by forecast horizon", "预测期末外部活动增强")
       : percent <= -1
-        ? "Lower external activity by forecast horizon"
-        : "External activity broadly stable"
+        ? localized("Lower external activity by forecast horizon", "预测期末外部活动减弱")
+        : localized("External activity broadly stable", "外部活动总体稳定")
   );
 }
 
@@ -233,7 +314,7 @@ function renderOverviewCharts() {
       labels: activity.map((row) => monthFormat.format(new Date(`${row.month}T00:00:00Z`))),
       datasets: [
         {
-          label: "Sales",
+          label: t("Sales"),
           data: activity.map((row) => row.sales_quantity),
           borderColor: "#2f648f",
           backgroundColor: "#2f648f",
@@ -243,7 +324,7 @@ function renderOverviewCharts() {
           tension: 0.26
         },
         {
-          label: "Purchases",
+          label: t("Purchases"),
           data: activity.map((row) => row.purchase_quantity),
           borderColor: "#b99142",
           backgroundColor: "#fffdf9",
@@ -320,7 +401,13 @@ function renderOverviewAlertTable() {
 
 function renderInventoryTable() {
   const rows = filteredInventory();
-  setText("#inventory-count", `${numberFormat.format(rows.length)} inventory lines`);
+  setText(
+    "#inventory-count",
+    localized(
+      `${numberFormat.format(rows.length)} inventory lines`,
+      `${numberFormat.format(rows.length)} 条库存记录`
+    )
+  );
   $("#inventory-table").innerHTML = rows.length
     ? rows
         .map((row) => {
@@ -339,7 +426,10 @@ function renderInventoryTable() {
             </tr>`;
         })
         .join("")
-    : '<tr><td colspan="9" class="empty-state">No inventory lines match these filters.</td></tr>';
+    : `<tr><td colspan="9" class="empty-state">${localized(
+        "No inventory lines match these filters.",
+        "没有符合当前筛选条件的库存记录。"
+      )}</td></tr>`;
 }
 
 function isAcknowledged(row) {
@@ -366,15 +456,15 @@ function renderAlerts() {
                 )}</p>
               </div>
               <div class="alert-measure">
-                <span>Available</span>
+                <span>${t("Available")}</span>
                 <strong>${numberFormat.format(row.available_quantity)} ${escapeHtml(row.unit)}</strong>
               </div>
               <div class="alert-measure">
-                <span>In transit</span>
+                <span>${t("In transit")}</span>
                 <strong>${numberFormat.format(row.in_transit_quantity)} ${escapeHtml(row.unit)}</strong>
               </div>
               <div class="alert-measure">
-                <span>Suggested</span>
+                <span>${localized("Suggested", "建议数量")}</span>
                 <strong>${numberFormat.format(suggestedOrder(row))} ${escapeHtml(row.unit)}</strong>
               </div>
               <button
@@ -383,12 +473,19 @@ function renderAlerts() {
                 data-alert-id="${escapeHtml(row.alert_id)}"
                 ${acknowledged ? "disabled" : ""}
               >
-                ${acknowledged ? "Acknowledged" : "Acknowledge"}
+                ${
+                  acknowledged
+                    ? localized("Acknowledged", "已确认")
+                    : localized("Acknowledge", "确认预警")
+                }
               </button>
             </article>`;
         })
         .join("")
-    : '<div class="panel empty-state">No open inventory alerts for this warehouse.</div>';
+    : `<div class="panel empty-state">${localized(
+        "No open inventory alerts for this warehouse.",
+        "该仓库没有未处理的库存预警。"
+      )}</div>`;
 
   $$(".ack-button:not(:disabled)").forEach((button) => {
     button.addEventListener("click", () => acknowledgeAlert(button.dataset.alertId));
@@ -420,7 +517,7 @@ function renderForecast() {
       labels: labels.map((date) => monthFormat.format(new Date(`${date}T00:00:00Z`))),
       datasets: [
         {
-          label: "Observed",
+          label: localized("Observed", "实际值"),
           data: observedValues,
           borderColor: "#172027",
           backgroundColor: "#172027",
@@ -429,7 +526,7 @@ function renderForecast() {
           tension: 0.2
         },
         {
-          label: "Forecast",
+          label: t("Forecast"),
           data: forecastValues,
           borderColor: "#c76535",
           backgroundColor: "#c76535",
@@ -439,7 +536,7 @@ function renderForecast() {
           tension: 0.2
         },
         {
-          label: "Lower bound",
+          label: t("Lower bound"),
           data: lowerValues,
           borderColor: "rgba(199, 101, 53, 0)",
           backgroundColor: "rgba(199, 101, 53, 0.13)",
@@ -447,7 +544,7 @@ function renderForecast() {
           fill: "+1"
         },
         {
-          label: "Upper bound",
+          label: t("Upper bound"),
           data: upperValues,
           borderColor: "rgba(199, 101, 53, 0)",
           backgroundColor: "rgba(199, 101, 53, 0.13)",
@@ -463,7 +560,9 @@ function renderForecast() {
         legend: {
           position: "top",
           align: "end",
-          labels: { filter: (item) => !["Lower bound", "Upper bound"].includes(item.text) }
+          labels: {
+            filter: (item) => ![t("Lower bound"), t("Upper bound")].includes(item.text)
+          }
         },
         tooltip: {
           filter: (context) => context.raw != null,
@@ -474,31 +573,52 @@ function renderForecast() {
         x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
         y: {
           grid: { color: "#e9e4da" },
-          title: { display: true, text: "Index (2017 = 100)" }
+          title: { display: true, text: localized("Index (2017 = 100)", "指数（2017 = 100）") }
         }
       }
     }
   });
 
-  const direction = percent >= 1 ? "Rising" : percent <= -1 ? "Falling" : "Stable";
+  const direction =
+    percent >= 1
+      ? localized("Rising", "上升")
+      : percent <= -1
+        ? localized("Falling", "下降")
+        : localized("Stable", "稳定");
   setText("#forecast-direction", direction);
   setText(
     "#forecast-method",
-    state.data.mode === "cloud" ? "BigQuery ML · ARIMA_PLUS" : "Local seasonal baseline"
+    state.data.mode === "cloud"
+      ? "BigQuery ML · ARIMA_PLUS"
+      : localized("Local seasonal baseline", "本地季节性基线")
   );
   setText(
     "#forecast-takeaway",
     percent >= 1
-      ? "External activity points to a firmer demand environment."
+      ? localized(
+          "External activity points to a firmer demand environment.",
+          "外部活动表明需求环境正在增强。"
+        )
       : percent <= -1
-        ? "External activity points to a softer demand environment."
-        : "External activity is forecast to remain broadly stable."
+        ? localized(
+            "External activity points to a softer demand environment.",
+            "外部活动表明需求环境正在减弱。"
+          )
+        : localized(
+            "External activity is forecast to remain broadly stable.",
+            "预计外部活动将总体保持稳定。"
+          )
   );
   setText(
     "#forecast-explanation",
-    `The final forecast observation is ${Math.abs(percent).toFixed(1)}% ${
-      percent >= 0 ? "above" : "below"
-    } the latest actual index. Use this as planning context, not as a product-level sales commitment.`
+    localized(
+      `The final forecast observation is ${Math.abs(percent).toFixed(1)}% ${
+        percent >= 0 ? "above" : "below"
+      } the latest actual index. Use this as planning context, not as a product-level sales commitment.`,
+      `最终预测值比最新实际指数${percent >= 0 ? "高" : "低"} ${Math.abs(percent).toFixed(
+        1
+      )}%。请将其作为规划背景，而非产品级销售承诺。`
+    )
   );
   $("#forecast-table").innerHTML = forecast
     .slice(0, 6)
@@ -515,13 +635,24 @@ function renderForecast() {
 
   const firstDate = observed.at(0)?.observation_date?.slice(0, 4);
   const lastDate = observed.at(-1)?.observation_date?.slice(0, 7);
-  setText("#industry-coverage", `${firstDate}–${lastDate} (${observed.length} observations)`);
+  setText(
+    "#industry-coverage",
+    localized(
+      `${firstDate}–${lastDate} (${observed.length} observations)`,
+      `${firstDate}–${lastDate}（${observed.length} 个观测值）`
+    )
+  );
   const inventory = state.data.inventory;
   setText(
     "#inventory-coverage",
-    `${new Set(inventory.map((row) => row.product_code)).size} products × ${
-      new Set(inventory.map((row) => row.warehouse)).size
-    } warehouses`
+    localized(
+      `${new Set(inventory.map((row) => row.product_code)).size} products × ${
+        new Set(inventory.map((row) => row.warehouse)).size
+      } warehouses`,
+      `${new Set(inventory.map((row) => row.product_code)).size} 个产品 × ${
+        new Set(inventory.map((row) => row.warehouse)).size
+      } 个仓库`
+    )
   );
 }
 
@@ -532,6 +663,7 @@ function renderAll() {
   renderInventoryTable();
   renderAlerts();
   renderForecast();
+  translateStaticInterface();
 }
 
 function populateSelect(selector, values) {
@@ -566,9 +698,60 @@ function navigate(page) {
   $$("[data-page-panel]").forEach((panel) =>
     panel.classList.toggle("is-active", panel.dataset.pagePanel === page)
   );
-  setText("#page-title", pageTitles[page]);
+  setText("#page-title", t(pageTitles[page]));
   history.replaceState(null, "", `#${page}`);
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setLanguage(language) {
+  if (!["en", "zh"].includes(language)) return;
+  state.language = language;
+  try {
+    localStorage.setItem("refractory-language", language);
+  } catch {
+    // Language switching still works when storage is unavailable.
+  }
+
+  const sampleQuestions = $$('[data-agent-question]');
+  if (sampleQuestions.length === 3) {
+    sampleQuestions[0].dataset.agentQuestion =
+      language === "zh"
+        ? "是否应该为芝加哥的 MCB-001 补货？为什么？"
+        : "Should we replenish MCB-001 at Chicago, and why?";
+    sampleQuestions[1].dataset.agentQuestion =
+      language === "zh" ? "建议订购量是如何计算的？" : "How is suggested order quantity calculated?";
+    sampleQuestions[2].dataset.agentQuestion =
+      language === "zh" ? "哪些数据是真实的，哪些是合成的？" : "What data is real and what data is synthetic?";
+  }
+
+  setText("#page-title", t(pageTitles[state.page]));
+  if (state.data) {
+    renderAll();
+    updatePlatformStatus();
+  }
+  if (state.lastAgentResult) renderAgentResult(state.lastAgentResult);
+  translateStaticInterface();
+  loadAgentStatus();
+}
+
+function updatePlatformStatus() {
+  if (!state.data) return;
+  const generated = new Date(state.data.generatedAt);
+  setText(
+    "#platform-mode",
+    state.data.mode === "cloud"
+      ? localized("Live cloud data", "实时云端数据")
+      : localized("Local validated preview", "本地已验证预览")
+  );
+  setText(
+    "#sidebar-freshness",
+    `${localized("Updated", "更新于")} ${generated.toLocaleString(locale(), {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    })}`
+  );
 }
 
 async function acknowledgeAlert(alertId) {
@@ -591,7 +774,12 @@ async function acknowledgeAlert(alertId) {
       ...state.acknowledgments.filter((item) => item.alert_id !== alertId)
     ];
     renderAlerts();
-    showToast(`${row.product_code} alert acknowledged. No purchase order was created.`);
+    showToast(
+      localized(
+        `${row.product_code} alert acknowledged. No purchase order was created.`,
+        `已确认 ${row.product_code} 预警。未创建采购订单。`
+      )
+    );
   } catch (error) {
     showToast(error.message);
   }
@@ -641,7 +829,9 @@ function exportCsv() {
   link.download = `refractory-inventory-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
-  showToast(`Exported ${rows.length} inventory lines.`);
+  showToast(
+    localized(`Exported ${rows.length} inventory lines.`, `已导出 ${rows.length} 条库存记录。`)
+  );
 }
 
 let toastTimer;
@@ -653,7 +843,40 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 3400);
 }
 
+function traceLabel(type) {
+  if (state.language !== "zh") return type.replaceAll("_", " ");
+  return (
+    {
+      input: "输入",
+      retrieval: "证据检索",
+      tool_call: "工具调用",
+      tool_result: "工具结果",
+      tool_decision: "工具决策",
+      generation: "回答生成",
+      generation_fallback: "生成回退",
+      final: "最终回答"
+    }[type] || type.replaceAll("_", " ")
+  );
+}
+
+function traceSummary(step) {
+  if (state.language !== "zh") return step.summary;
+  return (
+    {
+      input: "已接收用户问题。",
+      retrieval: `已检索 ${step.details?.source_ids?.length ?? ""} 条基于项目数据的证据。`,
+      tool_call: "已调用只读补货建议工具。",
+      tool_result: "已收到需要人工审批的补货建议。",
+      tool_decision: "该问题无需调用补货工具。",
+      generation: "已使用基于证据的方式生成回答。",
+      generation_fallback: "云端生成不可用，已改用本地证据输出。",
+      final: "已返回包含引用和安全控制的回答。"
+    }[step.type] || step.summary
+  );
+}
+
 function renderAgentResult(result) {
+  state.lastAgentResult = result;
   $("#agent-answer-panel").hidden = false;
   $("#agent-sources-panel").hidden = false;
   $("#agent-trace-panel").hidden = false;
@@ -667,7 +890,9 @@ function renderAgentResult(result) {
           <span>${escapeHtml(source.citation)}</span>
           <div>
             <strong>${escapeHtml(source.title)}</strong>
-            <small>${escapeHtml(source.source)} · relevance ${escapeHtml(source.score)}</small>
+            <small>${escapeHtml(source.source)} · ${localized("relevance", "相关度")} ${escapeHtml(
+              source.score
+            )}</small>
             <p>${escapeHtml(source.excerpt)}</p>
           </div>
         </li>`
@@ -679,8 +904,8 @@ function renderAgentResult(result) {
       (step) => `
         <li>
           <span>${String(step.sequence).padStart(2, "0")}</span>
-          <div><strong>${escapeHtml(step.type.replaceAll("_", " "))}</strong><p>${escapeHtml(
-            step.summary
+          <div><strong>${escapeHtml(traceLabel(step.type))}</strong><p>${escapeHtml(
+            traceSummary(step)
           )}</p></div>
         </li>`
     )
@@ -691,14 +916,14 @@ function renderAgentResult(result) {
   if (result.tool_result) {
     const tool = result.tool_result;
     const fields = [
-      ["Product", `${tool.product_code} · ${tool.product_name}`],
-      ["Warehouse", tool.warehouse],
-      ["Status", tool.status],
-      ["Available", quantityLabel(tool.available_quantity, tool.unit)],
-      ["Safety stock", quantityLabel(tool.safety_stock, tool.unit)],
-      ["In transit", quantityLabel(tool.in_transit_quantity, tool.unit)],
-      ["Suggested order", quantityLabel(tool.suggested_order_quantity, tool.unit)],
-      ["Control", "Human approval required"]
+      [t("Product"), `${tool.product_code} · ${tool.product_name}`],
+      [t("Warehouse"), tool.warehouse],
+      [t("Status"), statusLabel(tool.status)],
+      [t("Available"), quantityLabel(tool.available_quantity, tool.unit)],
+      [t("Safety stock"), quantityLabel(tool.safety_stock, tool.unit)],
+      [t("In transit"), quantityLabel(tool.in_transit_quantity, tool.unit)],
+      [t("Suggested order"), quantityLabel(tool.suggested_order_quantity, tool.unit)],
+      [localized("Control", "控制要求"), localized("Human approval required", "需要人工审批")]
     ];
     $("#agent-tool-result").innerHTML = fields
       .map(
@@ -707,12 +932,16 @@ function renderAgentResult(result) {
       )
       .join("");
   }
+  translateStaticInterface();
 }
 
 async function askAgent(question) {
   const progress = $("#assistant-progress");
   const submit = $("#assistant-submit");
-  progress.textContent = "Retrieving evidence and checking tool access…";
+  progress.textContent = localized(
+    "Retrieving evidence and checking tool access…",
+    "正在检索证据并检查工具权限…"
+  );
   submit.disabled = true;
   try {
     const response = await fetch("/api/agent/ask", {
@@ -723,7 +952,10 @@ async function askAgent(question) {
     const result = await response.json();
     if (!response.ok) throw new Error(result.detail || result.error || "Agent request failed.");
     renderAgentResult(result);
-    progress.textContent = `Trace ${result.trace.trace_id.slice(0, 8)} completed.`;
+    progress.textContent = localized(
+      `Trace ${result.trace.trace_id.slice(0, 8)} completed.`,
+      `轨迹 ${result.trace.trace_id.slice(0, 8)} 已完成。`
+    );
   } catch (error) {
     progress.textContent = error.message;
     showToast(error.message);
@@ -740,7 +972,9 @@ async function loadAgentStatus() {
     setText("#agent-mode", status.generation_mode);
     setText(
       "#agent-model",
-      status.model ? `${status.model} · grounded retrieval` : "Grounded local generation · no cloud key"
+      status.model
+        ? `${status.model} · ${localized("grounded retrieval", "基于证据的检索")}`
+        : localized("Grounded local generation · no cloud key", "本地证据生成 · 无需云端密钥")
     );
   } catch (error) {
     console.error(error);
@@ -748,6 +982,9 @@ async function loadAgentStatus() {
 }
 
 function bindEvents() {
+  $$("[data-language]").forEach((button) =>
+    button.addEventListener("click", () => setLanguage(button.dataset.language))
+  );
   $$(".nav-item").forEach((button) =>
     button.addEventListener("click", () => navigate(button.dataset.page))
   );
@@ -800,31 +1037,28 @@ async function loadData() {
       fetch("/api/dashboard", { cache: "no-store" }),
       fetch("/api/acknowledgments", { cache: "no-store" })
     ]);
-    if (!dataResponse.ok) throw new Error("Dashboard data could not be loaded.");
+    if (!dataResponse.ok) {
+      throw new Error(localized("Dashboard data could not be loaded.", "无法加载仪表板数据。"));
+    }
     state.data = await dataResponse.json();
     state.acknowledgments = actionsResponse.ok ? await actionsResponse.json() : [];
     populateControls();
     chartDefaults();
     renderAll();
 
-    const generated = new Date(state.data.generatedAt);
-    setText("#platform-mode", state.data.mode === "cloud" ? "Live cloud data" : "Local validated preview");
-    setText("#sidebar-freshness", `Updated ${generated.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    })}`);
-    showToast("Inventory data refreshed.");
+    updatePlatformStatus();
+    translateStaticInterface();
+    showToast(localized("Inventory data refreshed.", "库存数据已刷新。"));
   } catch (error) {
     console.error(error);
-    setText("#platform-mode", "Data unavailable");
-    setText("#sidebar-freshness", "Check the local server");
+    setText("#platform-mode", localized("Data unavailable", "数据不可用"));
+    setText("#sidebar-freshness", localized("Check the local server", "请检查本地服务器"));
     showToast(error.message);
   }
 }
 
 bindEvents();
+setLanguage(state.language);
 navigate(location.hash.slice(1) || "overview");
 loadData();
 loadAgentStatus();
