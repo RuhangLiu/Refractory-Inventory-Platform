@@ -56,7 +56,7 @@ export function getAgentStatus() {
   };
 }
 
-function detectToolRequest(question) {
+export function detectToolRequest(question) {
   const productCode = question.toUpperCase().match(/\b[A-Z]{3}-\d{3}\b/)?.[0];
   const normalized = question.toLowerCase();
   const warehouse = warehouseAliases.find((entry) =>

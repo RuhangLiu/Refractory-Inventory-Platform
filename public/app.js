@@ -972,8 +972,13 @@ async function loadAgentStatus() {
     setText("#agent-mode", status.generation_mode);
     setText(
       "#agent-model",
-      status.model
-        ? `${status.model} · ${localized("grounded retrieval", "基于证据的检索")}`
+      status.generation_mode === "managed-agent-engine"
+        ? `${status.model} · ${localized(
+            "BigQuery MCP + GCS MCP + RAG Engine",
+            "BigQuery MCP + GCS MCP + RAG Engine"
+          )}`
+        : status.model
+          ? `${status.model} · ${localized("grounded retrieval", "基于证据的检索")}`
         : localized("Grounded local generation · no cloud key", "本地证据生成 · 无需云端密钥")
     );
   } catch (error) {

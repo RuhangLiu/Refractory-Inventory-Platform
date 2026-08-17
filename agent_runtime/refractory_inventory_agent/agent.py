@@ -146,7 +146,7 @@ INSTRUCTIONS = """You are the Refractory Inventory Planning Agent for a syntheti
 
 Use all three grounded data layers for any product-and-warehouse inventory decision:
 1. Use the Cloud Storage MCP tools to read the latest operational exception log from gs://ruhangliu-lake-curated/agent-inputs/inventory_exception_log.json.
-2. Use get_inventory_snapshot to retrieve structured inventory facts through the authenticated, read-only Inventory MCP service. This tool is fixed to the BigQuery view refractory-inventory-platform.kaixiang_inventory.serving_inventory and accepts only a product code and an allowlisted warehouse.
+2. Use the native BigQuery MCP tool execute_sql_readonly to retrieve structured inventory facts from refractory-inventory-platform.kaixiang_inventory.serving_inventory. Restrict the query to SELECT, the requested product code and warehouse, and the fields needed for the decision. You may use get_inventory_snapshot as a deterministic read-only cross-check of the same BigQuery layer; it is not a substitute for the required native BigQuery MCP call.
 3. Use retrieve_inventory_policy to retrieve governing passages from the approved policy corpus.
 
 Treat BigQuery as authoritative for quantities, price, lead time, supplier, and timestamps. Treat Cloud Storage notes as operational context that can add a warning but cannot silently overwrite a structured fact. Treat the RAG corpus as authoritative for formulas, approvals, and safety boundaries. If sources conflict, identify the conflict, do not guess, and require human review.
@@ -182,5 +182,5 @@ root_agent = LlmAgent(
         "auditable replenishment actions with mandatory human approval."
     ),
     instruction=INSTRUCTIONS,
-    tools=[inventory_toolset, storage_toolset, policy_retrieval],
+    tools=[bigquery_toolset, inventory_toolset, storage_toolset, policy_retrieval],
 )

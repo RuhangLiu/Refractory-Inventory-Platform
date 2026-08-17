@@ -4,6 +4,10 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getAgentStatus, runInventoryAgent } from "./agent/assistant.mjs";
+import {
+  getManagedAgentStatus,
+  runManagedAgent
+} from "./agent/agent-engine-client.mjs";
 import { recommendReplenishment } from "./agent/replenishment-tool.mjs";
 import { listTraces } from "./agent/trace-store.mjs";
 
@@ -203,9 +207,11 @@ const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
   try {
     if (request.method === "GET" && url.pathname === "/api/health") {
+      const managedAgentStatus = getManagedAgentStatus();
       jsonResponse(response, 200, {
         status: "ok",
         mode: cloudModeEnabled() ? "cloud" : "local",
+        agent_mode: managedAgentStatus?.generation_mode || getAgentStatus().generation_mode,
         timestamp: new Date().toISOString()
       });
       return;
@@ -219,7 +225,7 @@ const server = createServer(async (request, response) => {
       return;
     }
     if (request.method === "GET" && url.pathname === "/api/agent/status") {
-      jsonResponse(response, 200, getAgentStatus());
+      jsonResponse(response, 200, getManagedAgentStatus() || getAgentStatus());
       return;
     }
     if (request.method === "GET" && url.pathname === "/api/agent/card") {
@@ -238,7 +244,13 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === "POST" && url.pathname === "/api/agent/ask") {
       const { question } = await readRequestJson(request);
-      jsonResponse(response, 200, await runInventoryAgent(question));
+      jsonResponse(
+        response,
+        200,
+        await (getManagedAgentStatus()
+          ? runManagedAgent(question)
+          : runInventoryAgent(question))
+      );
       return;
     }
     if (request.method === "POST" && url.pathname === "/api/agent/recommend") {

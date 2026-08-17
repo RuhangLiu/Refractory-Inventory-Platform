@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 from typing import Any
 
@@ -85,6 +86,7 @@ async def main() -> None:
             f"Event summaries: {event_summaries}"
         )
     lower_text = final_text.lower()
+    event_text = json.dumps(event_summaries, default=str).lower()
     if "permission_denied" in lower_text or "403" in lower_text:
         raise RuntimeError(f"The deployed agent returned an access error: {final_text}")
 
@@ -95,7 +97,15 @@ async def main() -> None:
         or "ric-pol-002" in lower_text,
         "human approval control": "approval" in lower_text,
     }
+    required_tool_calls = {
+        "native BigQuery MCP": "execute_sql_readonly" in event_text,
+        "Cloud Storage MCP": "read_object" in event_text,
+        "RAG retrieval": "retrieve_inventory_policy" in event_text,
+    }
     missing = [name for name, present in required_evidence.items() if not present]
+    missing.extend(
+        name for name, present in required_tool_calls.items() if not present
+    )
     if missing:
         raise RuntimeError(
             "The deployed agent response is incomplete; missing "
