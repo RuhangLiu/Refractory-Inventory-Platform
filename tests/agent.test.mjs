@@ -101,7 +101,14 @@ test("managed Agent Engine adapter returns all three grounded layers", async () 
     { content: { parts: [{ functionCall: { name: "read_object", args: {} } }] } },
     {
       content: {
-        parts: [{ functionCall: { name: "execute_sql_readonly", args: { query: "SELECT 1" } } }]
+        parts: [
+          {
+            functionCall: {
+              name: "get_inventory_snapshot",
+              args: { product_code: "MCB-001", warehouse: "Chicago" }
+            }
+          }
+        ]
       }
     },
     {
@@ -136,5 +143,5 @@ test("managed Agent Engine adapter returns all three grounded layers", async () 
   assert.equal(result.generation_mode, "managed-agent-engine");
   assert.equal(result.sources.length, 3);
   assert.equal(result.tool_result.suggested_order_quantity, 102);
-  assert.ok(result.trace.steps.some((step) => step.summary.includes("execute_sql_readonly")));
+  assert.ok(result.trace.steps.some((step) => step.summary.includes("get_inventory_snapshot")));
 });

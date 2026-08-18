@@ -98,7 +98,7 @@ async def main() -> None:
         "human approval control": "approval" in lower_text,
     }
     required_tool_calls = {
-        "native BigQuery MCP": "execute_sql_readonly" in event_text,
+        "BigQuery-backed Inventory MCP": "get_inventory_snapshot" in event_text,
         "Cloud Storage MCP": "read_object" in event_text,
         "RAG retrieval": "retrieve_inventory_policy" in event_text,
     }

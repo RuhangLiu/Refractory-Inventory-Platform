@@ -2,7 +2,6 @@ from functools import cached_property
 import os
 from typing import Any
 
-import google.auth
 import vertexai
 from google.adk.agents import LlmAgent
 from google.adk.integrations.agent_registry import AgentRegistry
@@ -25,11 +24,6 @@ RAG_CORPUS = os.getenv(
     "ragCorpora/1813024305458446336",
 )
 
-BIGQUERY_MCP_SERVER = os.getenv(
-    "BIGQUERY_MCP_SERVER",
-    "projects/refractory-inventory-platform/locations/global/mcpServers/"
-    "agentregistry-00000000-0000-0000-1377-79d79d4a4a0d",
-)
 STORAGE_MCP_SERVER = os.getenv(
     "STORAGE_MCP_SERVER",
     "projects/refractory-inventory-platform/locations/global/mcpServers/"
@@ -45,13 +39,6 @@ INVENTORY_MCP_AUDIENCE = os.getenv(
     "https://refractory-inventory-mcp-77qfs3f3uq-uc.a.run.app",
 )
 
-BIGQUERY_READ_ONLY_TOOLS = [
-    "list_dataset_ids",
-    "get_dataset_info",
-    "list_table_ids",
-    "get_table_info",
-    "execute_sql_readonly",
-]
 STORAGE_READ_ONLY_TOOLS = [
     "list_objects",
     "get_object_metadata",
@@ -111,44 +98,11 @@ def inventory_auth_headers(_context: Any) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
-def bigquery_auth_headers(_context: Any) -> dict[str, str]:
-    """Mint a short-lived OAuth token for the Google-managed BigQuery MCP.
-
-    Agent Engine's effective service identity already has the project-level
-    MCP Tool User, BigQuery Job User, and BigQuery Data Viewer roles.  The
-    Google-managed MCP endpoint also needs an OAuth bearer token with the
-    BigQuery scope.  Resolve that token inside the hosted runtime so no user
-    credential or service-account key is stored in the deployment package.
-    """
-    credentials, _ = google.auth.default(
-        scopes=[
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/bigquery",
-        ]
-    )
-    credentials.refresh(Request())
-    return {
-        "Authorization": f"Bearer {credentials.token}",
-        "x-goog-user-project": PROJECT_ID,
-    }
-
-
-bigquery_registry = RuntimeAgentRegistry(
-    project_id=PROJECT_ID,
-    location=REGISTRY_LOCATION,
-    header_provider=bigquery_auth_headers,
-)
-
 inventory_registry = RuntimeAgentRegistry(
     project_id=PROJECT_ID,
     location=REGISTRY_LOCATION,
     header_provider=inventory_auth_headers,
 )
-
-bigquery_toolset = bigquery_registry.get_mcp_toolset(
-    mcp_server_name=BIGQUERY_MCP_SERVER
-)
-bigquery_toolset.tool_filter = BIGQUERY_READ_ONLY_TOOLS
 
 storage_toolset = registry.get_mcp_toolset(
     mcp_server_name=STORAGE_MCP_SERVER
@@ -175,7 +129,7 @@ INSTRUCTIONS = """You are the Refractory Inventory Planning Agent for a syntheti
 
 Use all three grounded data layers for any product-and-warehouse inventory decision:
 1. Use the Cloud Storage MCP tools to read the latest operational exception log from gs://ruhangliu-lake-curated/agent-inputs/inventory_exception_log.json.
-2. Use the native BigQuery MCP tool execute_sql_readonly to retrieve structured inventory facts from refractory-inventory-platform.kaixiang_inventory.serving_inventory. Restrict the query to SELECT, the requested product code and warehouse, and the fields needed for the decision. You may use get_inventory_snapshot as a deterministic read-only cross-check of the same BigQuery layer; it is not a substitute for the required native BigQuery MCP call.
+2. Use get_inventory_snapshot from the private Refractory Inventory MCP service to retrieve structured inventory facts from refractory-inventory-platform.kaixiang_inventory.serving_inventory. The tool is deterministic and read-only: restrict every request to the requested product code and warehouse and never attempt to change data.
 3. Use retrieve_inventory_policy to retrieve governing passages from the approved policy corpus.
 
 Treat BigQuery as authoritative for quantities, price, lead time, supplier, and timestamps. Treat Cloud Storage notes as operational context that can add a warning but cannot silently overwrite a structured fact. Treat the RAG corpus as authoritative for formulas, approvals, and safety boundaries. If sources conflict, identify the conflict, do not guess, and require human review.
@@ -211,5 +165,5 @@ root_agent = LlmAgent(
         "auditable replenishment actions with mandatory human approval."
     ),
     instruction=INSTRUCTIONS,
-    tools=[bigquery_toolset, inventory_toolset, storage_toolset, policy_retrieval],
+    tools=[inventory_toolset, storage_toolset, policy_retrieval],
 )

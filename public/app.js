@@ -974,8 +974,8 @@ async function loadAgentStatus() {
       "#agent-model",
       status.generation_mode === "managed-agent-engine"
         ? `${status.model} · ${localized(
-            "BigQuery MCP + GCS MCP + RAG Engine",
-            "BigQuery MCP + GCS MCP + RAG Engine"
+            "Inventory MCP + GCS MCP + RAG Engine",
+            "Inventory MCP + GCS MCP + RAG Engine"
           )}`
         : status.model
           ? `${status.model} · ${localized("grounded retrieval", "基于证据的检索")}`

@@ -36,7 +36,7 @@ export function getManagedAgentStatus(environment = process.env) {
     model: configuration.model,
     agent_engine: configuration.resource,
     retrieval: "Vertex AI RAG Engine policy corpus",
-    tools: ["bigquery-remote-mcp", "gcs-remote-mcp", "refractory-inventory-mcp"],
+    tools: ["refractory-inventory-mcp", "gcs-remote-mcp", "vertex-ai-rag"],
     tool_access: "read-only structured and unstructured retrieval",
     human_approval_required: true,
     trace_policy: "managed tool events and evidence only; no hidden chain-of-thought"

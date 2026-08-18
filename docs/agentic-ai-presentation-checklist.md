@@ -35,7 +35,7 @@ in the final deck.
 Capture the Agent Studio or Agent Engine configuration with all of these visible:
 
 - Gemini 3.1 Pro model
-- BigQuery MCP toolset
+- BigQuery-backed Inventory MCP toolset
 - GCS MCP toolset
 - RAG corpus
 - Private `refractory-inventory-mcp`, if the pane has enough room
@@ -54,7 +54,7 @@ USD 0, and require human approval.
 > tool-use boundaries, conflict handling, and mandatory human approval.
 
 **Status:** Prompt text is ready. The final screenshot must prove that the
-native BigQuery MCP, GCS MCP, and RAG corpus are visibly active in Agent Studio.
+private BigQuery-backed Inventory MCP, GCS MCP, and RAG corpus are visibly active in Agent Studio.
 
 ## Slide 3 - Interactive Execution Trace
 
