@@ -2,6 +2,7 @@ from functools import cached_property
 import os
 from typing import Any
 
+import google.auth
 import vertexai
 from google.adk.agents import LlmAgent
 from google.adk.integrations.agent_registry import AgentRegistry
@@ -110,13 +111,41 @@ def inventory_auth_headers(_context: Any) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+def bigquery_auth_headers(_context: Any) -> dict[str, str]:
+    """Mint a short-lived OAuth token for the Google-managed BigQuery MCP.
+
+    Agent Engine's effective service identity already has the project-level
+    MCP Tool User, BigQuery Job User, and BigQuery Data Viewer roles.  The
+    Google-managed MCP endpoint also needs an OAuth bearer token with the
+    BigQuery scope.  Resolve that token inside the hosted runtime so no user
+    credential or service-account key is stored in the deployment package.
+    """
+    credentials, _ = google.auth.default(
+        scopes=[
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/bigquery",
+        ]
+    )
+    credentials.refresh(Request())
+    return {
+        "Authorization": f"Bearer {credentials.token}",
+        "x-goog-user-project": PROJECT_ID,
+    }
+
+
+bigquery_registry = RuntimeAgentRegistry(
+    project_id=PROJECT_ID,
+    location=REGISTRY_LOCATION,
+    header_provider=bigquery_auth_headers,
+)
+
 inventory_registry = RuntimeAgentRegistry(
     project_id=PROJECT_ID,
     location=REGISTRY_LOCATION,
     header_provider=inventory_auth_headers,
 )
 
-bigquery_toolset = registry.get_mcp_toolset(
+bigquery_toolset = bigquery_registry.get_mcp_toolset(
     mcp_server_name=BIGQUERY_MCP_SERVER
 )
 bigquery_toolset.tool_filter = BIGQUERY_READ_ONLY_TOOLS
