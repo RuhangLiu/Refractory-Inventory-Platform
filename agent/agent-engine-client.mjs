@@ -51,7 +51,21 @@ export function parseSseEvents(payload) {
       const parsed = JSON.parse(text);
       return Array.isArray(parsed) ? parsed : [parsed];
     } catch {
-      return [];
+      // Agent Engine streamQuery currently returns newline-delimited JSON even
+      // when `alt=sse` is requested. Parse each complete JSON frame without
+      // exposing or depending on opaque model metadata such as thought
+      // signatures.
+      return text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .flatMap((line) => {
+          try {
+            return [JSON.parse(line)];
+          } catch {
+            return [];
+          }
+        });
     }
   }
 
@@ -132,8 +146,10 @@ function uniqueNamedEvents(events) {
 
 function managedSources(toolCalls, answer) {
   const names = new Set(toolCalls.map((call) => call.name));
+  const hasTool = (...suffixes) =>
+    [...names].some((name) => suffixes.some((suffix) => name === suffix || name.endsWith(`_${suffix}`)));
   const sources = [];
-  if (names.has("execute_sql_readonly") || names.has("get_inventory_snapshot")) {
+  if (hasTool("execute_sql_readonly", "get_inventory_snapshot")) {
     sources.push({
       id: "bigquery:serving_inventory",
       title: "BigQuery serving_inventory",
@@ -141,7 +157,7 @@ function managedSources(toolCalls, answer) {
       excerpt: "Structured inventory facts retrieved at request time through a read-only MCP tool."
     });
   }
-  if ([...names].some((name) => ["read_object", "get_object_metadata", "list_objects"].includes(name))) {
+  if (hasTool("read_object", "get_object_metadata", "list_objects")) {
     sources.push({
       id: "gcs:inventory_exception_log",
       title: "Cloud Storage inventory exception log",
@@ -149,7 +165,7 @@ function managedSources(toolCalls, answer) {
       excerpt: "Operational exception context retrieved through the managed Cloud Storage MCP toolset."
     });
   }
-  if (names.has("retrieve_inventory_policy") || /RIC-POL-00[12]/i.test(answer)) {
+  if (hasTool("retrieve_inventory_policy") || /RIC-POL-00[12]/i.test(answer)) {
     sources.push({
       id: "rag:inventory_policies",
       title: "Approved inventory policy corpus",

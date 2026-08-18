@@ -96,15 +96,60 @@ test("managed Agent Engine SSE parser preserves tool calls and final answer", ()
   assert.equal(summary.answer, "Verified managed answer.");
 });
 
+test("managed Agent Engine parser accepts newline-delimited JSON frames", () => {
+  const events = parseSseEvents(
+    [
+      {
+        content: {
+          parts: [
+            {
+              function_call: {
+                name: "Refractory_Inventory_MCP_get_inventory_snapshot",
+                args: { product_code: "MCB-001", warehouse: "Chicago" }
+              }
+            }
+          ]
+        }
+      },
+      {
+        content: {
+          parts: [
+            {
+              function_response: {
+                name: "Refractory_Inventory_MCP_get_inventory_snapshot",
+                response: { available_quantity: 0 }
+              }
+            }
+          ]
+        }
+      },
+      { content: { parts: [{ text: "Verified NDJSON answer." }] } }
+    ]
+      .map((frame) => JSON.stringify(frame))
+      .join("\n")
+  );
+  const summary = extractManagedEventSummary(events);
+  assert.equal(events.length, 3);
+  assert.equal(
+    summary.toolCalls[0].name,
+    "Refractory_Inventory_MCP_get_inventory_snapshot"
+  );
+  assert.equal(summary.answer, "Verified NDJSON answer.");
+});
+
 test("managed Agent Engine adapter returns all three grounded layers", async () => {
   const frames = [
-    { content: { parts: [{ functionCall: { name: "read_object", args: {} } }] } },
+    {
+      content: {
+        parts: [{ functionCall: { name: "storage_googleapis_com_read_object", args: {} } }]
+      }
+    },
     {
       content: {
         parts: [
           {
             functionCall: {
-              name: "get_inventory_snapshot",
+              name: "Refractory_Inventory_MCP_get_inventory_snapshot",
               args: { product_code: "MCB-001", warehouse: "Chicago" }
             }
           }
@@ -127,7 +172,7 @@ test("managed Agent Engine adapter returns all three grounded layers", async () 
       }
     }
   ];
-  const payload = frames.map((frame) => `data: ${JSON.stringify(frame)}\n\n`).join("");
+  const payload = frames.map((frame) => JSON.stringify(frame)).join("\n");
   const result = await runManagedAgent("Should we replenish MCB-001 at Chicago?", {
     environment: {
       AGENT_ENGINE_RESOURCE:
